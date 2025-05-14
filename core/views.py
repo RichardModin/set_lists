@@ -27,6 +27,11 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', {'bands': user_bands, 'invites': invites})
 
 @login_required
+def view_setlist(request, setlist_id):
+    setlist = get_object_or_404(SetList, id=setlist_id)
+    return render(request, 'core/setlist_detail.html', {'setlist': setlist})
+
+@login_required
 def create_setlist(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     if request.method == 'POST':
@@ -53,11 +58,6 @@ def create_setlist(request, band_id):
     return render(request, 'core/setlist_form.html', {'form': form, 'band': band})
 
 @login_required
-def view_setlist(request, setlist_id):
-    setlist = get_object_or_404(SetList, id=setlist_id)
-    return render(request, 'core/setlist_detail.html', {'setlist': setlist})
-
-@login_required
 def edit_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     band = setlist.band
@@ -65,7 +65,7 @@ def edit_setlist(request, setlist_id):
     if request.method == 'POST':
         form = SetListForm(request.POST, instance=setlist)
         if form.is_valid():
-            setlist = form.save()
+            setlist = form.save(commit=False)
 
             # Clear existing songs from the setlist
             setlist.setlistsong_set.all().delete()
@@ -76,17 +76,11 @@ def edit_setlist(request, setlist_id):
                 for order, song_id in enumerate(song_ids, start=1):
                     song = get_object_or_404(Song, id=song_id)
                     SetListSong.objects.create(setlist=setlist, song=song, order=order)
+                messages.success(request, "Setlist updated successfully.")
             else:
                 # Handle the case where no songs are provided
                 messages.error(request, "You must add at least one song to the setlist.")
-                return render(request, 'core/setlist_form.html', {
-                    'form': form,
-                    'band': band,
-                    'setlist': setlist,
-                    'edit_mode': True,
-                })
-
-            return redirect('bands:band_detail', band_id=band.id)
+                setlist.delete()  # Remove the empty setlist
     else:
         form = SetListForm(instance=setlist)
 

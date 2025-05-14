@@ -62,10 +62,6 @@
               <a href="{% url 'songs:delete_song' song.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
             </td>
           </tr>
-        {% empty %}
-          <tr>
-            <td colspan="5" class="text-muted">No songs in the master list.</td>
-          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -93,9 +89,14 @@
 <script>
   $(document).ready(function() {
     var table = $('#songsTable').DataTable({
+      paging: false,
+      info: false,
       columnDefs: [
         { orderable: false, targets: -1 } // Disable sorting for the last column (Actions)
-      ]
+      ],
+      language: {
+        emptyTable: "No records available"
+      }
     });
 
     // Filter by Artist

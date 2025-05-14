@@ -2,6 +2,15 @@
 
 {% block content %}
 <div class="container mt-5" style="max-width: 800px;">
+
+   {% if messages %}
+    <div class="alert alert-success" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <h2>{{ edit_mode|default:False|yesno:"Edit Setlist,Create Setlist" }}</h2>
 
   <form method="post">
@@ -12,12 +21,12 @@
       <label for="id_name" class="form-label">Setlist Name</label>
       {{ form.name }}
       {% if form.name.errors %}
-      {% endif %}
         <div class="text-danger small">
           {% for error in form.name.errors %}
             <p>{{ error }}</p>
           {% endfor %}
         </div>
+      {% endif %}
     </div>
 
     <!-- Master Song List -->
@@ -88,7 +97,7 @@
     <!-- Submit Button -->
     <div class="d-flex justify-content-between">
       <button type="submit" class="btn btn-primary">Save Setlist</button>
-      <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+      <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-secondary">Cancel</a>
     </div>
   </form>
 </div>
@@ -96,9 +105,25 @@
 <script>
   $(document).ready(function() {
     $('#songsTable').DataTable({
+      paging: false,
+      info: false,
       columnDefs: [
         { orderable: false, targets: -1 } // Disable sorting for the Actions column
-      ]
+      ],
+      language: {
+        emptyTable: "No records available"
+      }
+    });
+
+    $('#setlistTable').DataTable({
+      rowReorder: true,
+      ordering: false,
+      searching: false,
+      paging: false,
+      info: false,
+      language: {
+        emptyTable: "No records available"
+      }
     });
   });
 
