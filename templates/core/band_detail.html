@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>{{ band.name }}</h2>
+
+  <!-- Delete Band Button -->
+  <form action="{% url 'core:delete_band' band.id %}" method="post" class="mb-4">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete Band</button>
+  </form>
+
+  <!-- Band Members -->
+  <div class="mb-4">
+    <h4>Members</h4>
+    <ul class="list-group">
+      {% for member in band.members.all %}
+        <li class="list-group-item">{{ member.username }}</li>
+      {% empty %}
+        <li class="list-group-item text-muted">No members yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Master Song List -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>Master Song List</h4>
+      <a href="{% url 'core:create_song' band.id %}" class="btn btn-sm btn-primary">Create New Song</a>
+    </div>
+    <ul class="list-group">
+      {% for song in band.songs.all %}
+        <li class="list-group-item">
+          <strong>{{ song.title }}</strong> by {{ song.artist }}
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">No songs in the master list.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Set Lists -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>Set Lists</h4>
+      <a href="{% url 'core:create_setlist' band.id %}" class="btn btn-sm btn-primary">Create New Setlist</a>
+    </div>
+    <ul class="list-group mt-2">
+      {% for setlist in band.setlists.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ setlist.name }}
+          <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-outline-secondary">View</a>
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">No set lists yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
