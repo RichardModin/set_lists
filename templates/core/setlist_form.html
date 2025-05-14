@@ -68,6 +68,7 @@
       <table id="setlistTable" class="table table-striped">
         <thead>
           <tr>
+            <th>Order</th>
             <th>Title</th>
             <th>Artist</th>
             <th>Key</th>
@@ -79,6 +80,7 @@
           {% if edit_mode %}
             {% for song in setlist.songs.all %}
               <tr data-id="{{ song.id }}">
+                <td>{{ forloop.counter }}</td>
                 <td>{{ song.title }}</td>
                 <td>{{ song.artist }}</td>
                 <td>{{ song.key }}</td>
@@ -97,59 +99,70 @@
     <!-- Submit Button -->
     <div class="d-flex justify-content-between">
       <button type="submit" class="btn btn-primary">Save Setlist</button>
-      <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-secondary">Cancel</a>
+      {% if edit_mode %}
+        <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-secondary">Cancel</a>
+      {% else %}
+        <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+      {% endif %}
     </div>
   </form>
 </div>
 
 <script>
   $(document).ready(function() {
-    $('#songsTable').DataTable({
-      paging: false,
-      info: false,
-      columnDefs: [
-        { orderable: false, targets: -1 } // Disable sorting for the Actions column
-      ],
-      language: {
-        emptyTable: "No records available"
-      }
-    });
-
-    $('#setlistTable').DataTable({
+    const setlistTable = $('#setlistTable').DataTable({
       rowReorder: true,
-      ordering: false,
       searching: false,
       paging: false,
-      info: false,
-      language: {
-        emptyTable: "No records available"
-      }
+      info: false
     });
-  });
 
-  function addSongToSetlist(id, title, artist, key, tempo) {
-    if ($(`#setlistTable tbody tr[data-id="${id}"]`).length > 0) {
-      alert("This song is already in the setlist.");
-      return;
-    }
+    function addSongToSetlist(id, title, artist, key, tempo) {
+      if ($(`#setlistTable tbody tr[data-id="${id}"]`).length > 0) {
+        alert("This song is already in the setlist.");
+        return;
+      }
 
-    const row = `
-      <tr data-id="${id}">
-        <td>${title}</td>
-        <td>${artist}</td>
-        <td>${key}</td>
-        <td>${tempo}</td>
-        <td>
+      let order = setlistTable.rows().count() + 1;
+
+      setlistTable.row.add([
+        order,
+        title,
+        artist,
+        key,
+        tempo,
+        `
           <button type="button" class="btn btn-sm btn-danger" onclick="removeSongFromSetlist('${id}')">Remove</button>
           <input type="hidden" name="songs" value="${id}">
-        </td>
-      </tr>
-    `;
-    $('#setlistTable tbody').append(row);
-  }
+        `
+      ]).draw(false);
 
-  function removeSongFromSetlist(id) {
-    $(`#setlistTable tbody tr[data-id="${id}"]`).remove();
-  }
+      // Add a data-id attribute to the newly added row
+      const addedRow = $(`#setlistTable tbody tr:last`);
+      addedRow.attr('data-id', id);
+    }
+
+    function removeSongFromSetlist(id) {
+      // Find the row with the matching data-id attribute
+      const row = $(`#setlistTable tbody tr[data-id="${id}"]`);
+      if (row.length > 0) {
+        // Remove the row from the DataTable
+        setlistTable.row(row).remove().draw(false);
+
+        // Update the "order" column for all remaining rows
+        setlistTable.rows().every(function(rowIdx) {
+          const rowData = this.data();
+          rowData[0] = rowIdx + 1; // Update the first value in the array (order column)
+          this.data(rowData); // Set the updated data back to the row
+        });
+
+        setlistTable.draw(false); // Redraw the table to reflect changes
+      }
+    }
+
+    // Expose functions globally
+    window.addSongToSetlist = addSongToSetlist;
+    window.removeSongFromSetlist = removeSongFromSetlist;
+  });
 </script>
 {% endblock %}
