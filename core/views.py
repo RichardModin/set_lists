@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login
-from .models import Band, SetList, BandInvite
-from .forms import BandForm, SetListForm, UserRegisterForm, SongForm
+from .models import Band, SetList, BandInvite, Song
+from .forms import BandForm, SetListForm, UserRegisterForm,  SongForm
 
 
 def register(request):
@@ -36,6 +36,21 @@ def create_band(request):
     else:
         form = BandForm()
     return render(request, 'core/band_form.html', {'form': form})
+
+@login_required
+def edit_band(request, band_id):
+    band = get_object_or_404(Band, id=band_id)
+
+    if request.method == 'POST':
+        form = BandForm(request.POST, instance=band)
+        if form.is_valid():
+            form.save()
+            return redirect('core:band_detail', band_id=band.id)
+    else:
+        form = BandForm(instance=band)
+
+    return render(request, 'core/band_form.html', {'form': form, 'editing': True, 'band': band})
+
 
 @login_required
 def band_detail(request, band_id):
@@ -88,6 +103,31 @@ def create_song(request, band_id):
         form = SongForm()
 
     return render(request, 'core/song_form.html', {'form': form, 'band': band})
+
+@login_required
+def edit_song(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+
+    if request.method == "POST":
+        form = SongForm(request.POST, instance=song)
+        if form.is_valid():
+            form.save()
+            return redirect('core:band_detail', band_id=song.band.id)
+    else:
+        form = SongForm(instance=song)
+
+    return render(request, 'core/song_form.html', {'form': form, 'band': song.band, 'editing': True})
+
+@login_required
+def delete_song(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    band = song.band
+    if request.method == "POST":
+        song.delete()
+        return redirect('core:band_detail', band_id=band.id)  # Update with your actual song list URL name
+
+    return render(request, 'core/song_confirm_delete.html', {'song': song, 'band': band})
+
 
 @login_required
 def delete_band(request, band_id):

@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="container mt-5" style="max-width: 500px;">
-    <h2 class="mb-4">Create a New Band</h2>
+    <h2 class="mb-4">{% if editing %}Edit Band{% else %}Create a New Band{% endif %}</h2>
 
     <form method="post">
       {% csrf_token %}
@@ -12,16 +12,16 @@
           <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
           {{ field }}
           {% if field.help_text %}
-            <div class="form-text">{{ field.help_text }}</div>
           {% endif %}
           {% for error in field.errors %}
-            <div class="text-danger small">{{ error }}</div>
           {% endfor %}
+            <div class="text-danger small">{{ error }}</div>
+            <div class="form-text">{{ field.help_text }}</div>
         </div>
       {% endfor %}
 
-      <button type="submit" class="btn btn-primary">Create Band</button>
-      <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">{% if editing %}Save Changes{% else %}Create Band{% endif %}</button>
+      <a href="{% if editing %}{% url 'core:band_detail' band.id %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
 {% endblock %}

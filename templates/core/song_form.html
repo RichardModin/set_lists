@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Create a new song for {{ band.name }}</h2>
+  <h2>{% if editing %}Edit{% else %}Create{% endif %} Song for {{ band.name }}</h2>
 
   <form method="POST" class="needs-validation" novalidate>
     {% csrf_token %}
     <div class="form-group">
       <label for="id_title">Song Title</label>
-      <input type="text" name="title" class="form-control {% if form.title.errors %}is-invalid{% endif %}" id="id_title" required>
+      <input type="text" name="title" class="form-control {% if form.title.errors %}is-invalid{% endif %}" id="id_title" value="{{ form.title.value|default_if_none:'' }}" required>
       {% for error in form.title.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {% endfor %}
@@ -15,7 +15,7 @@
 
     <div class="form-group">
       <label for="id_artist">Artist</label>
-      <input type="text" name="artist" class="form-control {% if form.artist.errors %}is-invalid{% endif %}" id="id_artist">
+      <input type="text" name="artist" class="form-control {% if form.artist.errors %}is-invalid{% endif %}" id="id_artist" value="{{ form.artist.value|default_if_none:'' }}">
       {% for error in form.artist.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {% endfor %}
@@ -23,7 +23,7 @@
 
     <div class="form-group">
       <label for="id_key">Key (optional)</label>
-      <input type="text" name="key" class="form-control {% if form.key.errors %}is-invalid{% endif %}" id="id_key">
+      <input type="text" name="key" class="form-control {% if form.key.errors %}is-invalid{% endif %}" id="id_key" value="{{ form.key.value|default_if_none:'' }}">
       {% for error in form.key.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {% endfor %}
@@ -31,13 +31,13 @@
 
     <div class="form-group">
       <label for="id_tempo">Tempo (optional)</label>
-      <input type="number" name="tempo" class="form-control {% if form.tempo.errors %}is-invalid{% endif %}" id="id_tempo" required>
+      <input type="number" name="tempo" class="form-control {% if form.tempo.errors %}is-invalid{% endif %}" id="id_tempo" value="{{ form.tempo.value|default_if_none:'' }}" required>
       {% for error in form.tempo.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {% endfor %}
     </div>
 
-    <button type="submit" class="btn btn-primary">Create Song</button>
+    <button type="submit" class="btn btn-primary">{% if editing %}Save Changes{% else %}Create Song{% endif %}</button>
   </form>
 
   <br>
