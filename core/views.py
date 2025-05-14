@@ -55,7 +55,8 @@ def edit_band(request, band_id):
 @login_required
 def band_detail(request, band_id):
     band = get_object_or_404(Band, id=band_id)
-    return render(request, 'core/band_detail.html', {'band': band})
+    unique_artists = band.songs.values_list('artist', flat=True).distinct()
+    return render(request, 'core/band_detail.html', {'band': band, 'unique_artists': unique_artists})
 
 @login_required
 def create_setlist(request, band_id):

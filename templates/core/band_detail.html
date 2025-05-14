@@ -31,6 +31,15 @@
       <h4>Master Song List</h4>
       <a href="{% url 'core:create_song' band.id %}" class="btn btn-sm btn-primary">Create New Song</a>
     </div>
+    <div class="mb-2">
+      <label for="artistFilter" class="form-label">Filter by Artist:</label>
+      <select id="artistFilter" class="form-select">
+        <option value="">All Artists</option>
+        {% for artist in unique_artists %}
+          <option value="{{ artist }}">{{ artist }}</option>
+        {% endfor %}
+      </select>
+    </div>
     <table id="songsTable" class="table table-striped">
       <thead>
         <tr>
@@ -80,4 +89,20 @@
     </ul>
   </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+    var table = $('#songsTable').DataTable({
+      columnDefs: [
+        { orderable: false, targets: -1 } // Disable sorting for the last column (Actions)
+      ]
+    });
+
+    // Filter by Artist
+    $('#artistFilter').on('change', function() {
+      var artist = $(this).val();
+      table.column(1).search(artist).draw(); // Column index 1 corresponds to the "Artist" column
+    });
+  });
+</script>
 {% endblock %}
