@@ -15,7 +15,7 @@ def create_band(request):
             return redirect('core:dashboard')
     else:
         form = BandForm()
-    return render(request, 'core/band_form.html', {'form': form})
+    return render(request, 'bands/band_form.html', {'form': form})
 
 @login_required
 def edit_band(request, band_id):
@@ -29,14 +29,14 @@ def edit_band(request, band_id):
     else:
         form = BandForm(instance=band)
 
-    return render(request, 'core/band_form.html', {'form': form, 'editing': True, 'band': band})
+    return render(request, 'bands/band_form.html', {'form': form, 'editing': True, 'band': band})
 
 
 @login_required
 def band_detail(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     unique_artists = band.songs.values_list('artist', flat=True).distinct()
-    return render(request, 'core/band_detail.html', {'band': band, 'unique_artists': unique_artists})
+    return render(request, 'bands/band_detail.html', {'band': band, 'unique_artists': unique_artists})
 
 @login_required
 def delete_band(request, band_id):
@@ -57,4 +57,4 @@ def invite_member(request, band_id):
             invite = BandInvite.objects.create(band=band, invited_user=email)
             # Send email logic here
             return redirect('bands:band_detail', band_id=band.id)
-    return render(request, 'core/invite_member.html', {'band': band})
+    return render(request, 'bands/invite_member.html', {'band': band})

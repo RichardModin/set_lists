@@ -20,7 +20,7 @@ def create_song(request, band_id):
     else:
         form = SongForm()
 
-    return render(request, 'core/song_form.html', {'form': form, 'band': band})
+    return render(request, 'songs/song_form.html', {'form': form, 'band': band})
 
 @login_required
 def edit_song(request, song_id):
@@ -34,7 +34,7 @@ def edit_song(request, song_id):
     else:
         form = SongForm(instance=song)
 
-    return render(request, 'core/song_form.html', {'form': form, 'band': song.band, 'editing': True})
+    return render(request, 'songs/song_form.html', {'form': form, 'band': song.band, 'editing': True})
 
 @login_required
 def delete_song(request, song_id):
@@ -44,4 +44,4 @@ def delete_song(request, song_id):
         song.delete()
         return redirect('bands:band_detail', band_id=band.id)  # Update with your actual song list URL name
 
-    return render(request, 'core/song_confirm_delete.html', {'song': song, 'band': band})
+    return render(request, 'songs/song_confirm_delete.html', {'song': song, 'band': band})
