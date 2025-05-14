@@ -6,7 +6,7 @@
 
 <form method="post">
   {% csrf_token %}
-  <a href="{% url 'core:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+  <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
   <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 

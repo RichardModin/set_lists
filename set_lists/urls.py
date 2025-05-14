@@ -21,6 +21,8 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('bands/', include('bands.urls')),
+    path('songs/', include('songs.urls')),
     path('', include('core.urls')),
     path('', RedirectView.as_view(url='/accounts/login', permanent=False)),  # redirect root
 ]

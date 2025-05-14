@@ -21,7 +21,7 @@
       {% endfor %}
 
       <button type="submit" class="btn btn-primary">{% if editing %}Save Changes{% else %}Create Band{% endif %}</button>
-      <a href="{% if editing %}{% url 'core:band_detail' band.id %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+      <a href="{% if editing %}{% url 'bands:band_detail' band.id %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
 {% endblock %}

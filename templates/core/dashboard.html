@@ -17,7 +17,7 @@
           {% for band in bands %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
               {{ band.name }}
-              <a href="{% url 'core:band_detail' band.id %}" class="btn btn-sm btn-outline-primary">View</a>
+              <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-sm btn-outline-primary">View</a>
             </li>
           {% endfor %}
         {% else %}
@@ -25,7 +25,7 @@
         {% endif %}
       </ul>
       <div class="card-footer text-end">
-        <a href="{% url 'core:create_band' %}" class="btn btn-primary">Create Band</a>
+        <a href="{% url 'bands:create_band' %}" class="btn btn-primary">Create Band</a>
       </div>
     </div>
 
