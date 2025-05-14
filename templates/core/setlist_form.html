@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 600px;">
-  <h2>Create/Edit Setlist</h2>
+<div class="container mt-5" style="max-width: 800px;">
+  <h2>{{ edit_mode|default:False|yesno:"Edit Setlist,Create Setlist" }}</h2>
 
   <form method="post">
     {% csrf_token %}
@@ -12,26 +12,77 @@
       <label for="id_name" class="form-label">Setlist Name</label>
       {{ form.name }}
       {% if form.name.errors %}
+      {% endif %}
         <div class="text-danger small">
           {% for error in form.name.errors %}
             <p>{{ error }}</p>
           {% endfor %}
         </div>
-      {% endif %}
     </div>
 
-    <!-- Select Songs -->
-    <div class="mb-3">
-      <label for="id_songs" class="form-label">Select Songs</label>
-      {{ form.songs }}
-      {% if form.songs.errors %}
-        <div class="text-danger small">
-          {% for error in form.songs.errors %}
-            <p>{{ error }}</p>
+    <!-- Master Song List -->
+    <div class="mb-4">
+      <h4>Master Song List</h4>
+      <table id="songsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Key</th>
+            <th>Tempo</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for song in band.songs.all %}
+            <tr>
+              <td>{{ song.title }}</td>
+              <td>{{ song.artist }}</td>
+              <td>{{ song.key }}</td>
+              <td>{{ song.tempo }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-success" onclick="addSongToSetlist('{{ song.id }}', '{{ song.title }}', '{{ song.artist }}', '{{ song.key }}', '{{ song.tempo }}')">Add</button>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-muted">No songs in the master list.</td>
+            </tr>
           {% endfor %}
-        </div>
-      {% endif %}
-      <small class="form-text text-muted">Hold 'Ctrl' (or 'Cmd' on Mac) to select multiple songs.</small>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Setlist Songs -->
+    <div class="mb-4">
+      <h4>Setlist Songs</h4>
+      <table id="setlistTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Key</th>
+            <th>Tempo</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if edit_mode %}
+            {% for song in setlist.songs.all %}
+              <tr data-id="{{ song.id }}">
+                <td>{{ song.title }}</td>
+                <td>{{ song.artist }}</td>
+                <td>{{ song.key }}</td>
+                <td>{{ song.tempo }}</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger" onclick="removeSongFromSetlist('{{ song.id }}')">Remove</button>
+                  <input type="hidden" name="songs" value="{{ song.id }}">
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
     </div>
 
     <!-- Submit Button -->
@@ -41,4 +92,39 @@
     </div>
   </form>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('#songsTable').DataTable({
+      columnDefs: [
+        { orderable: false, targets: -1 } // Disable sorting for the Actions column
+      ]
+    });
+  });
+
+  function addSongToSetlist(id, title, artist, key, tempo) {
+    if ($(`#setlistTable tbody tr[data-id="${id}"]`).length > 0) {
+      alert("This song is already in the setlist.");
+      return;
+    }
+
+    const row = `
+      <tr data-id="${id}">
+        <td>${title}</td>
+        <td>${artist}</td>
+        <td>${key}</td>
+        <td>${tempo}</td>
+        <td>
+          <button type="button" class="btn btn-sm btn-danger" onclick="removeSongFromSetlist('${id}')">Remove</button>
+          <input type="hidden" name="songs" value="${id}">
+        </td>
+      </tr>
+    `;
+    $('#setlistTable tbody').append(row);
+  }
+
+  function removeSongFromSetlist(id) {
+    $(`#setlistTable tbody tr[data-id="${id}"]`).remove();
+  }
+</script>
 {% endblock %}

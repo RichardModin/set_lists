@@ -13,6 +13,7 @@ urlpatterns = [
     path('bands/<int:band_id>/edit/', views.edit_band, name='edit_band'),
     path('bands/<int:band_id>/delete/', views.delete_band, name='delete_band'),
     path('setlists/<int:band_id>/create/', views.create_setlist, name='create_setlist'),
+    path('setlists/<int:setlist_id>/edit/', views.edit_setlist, name='edit_setlist'),
     path('setlists/<int:setlist_id>/', views.view_setlist, name='view_setlist'),
     path('songs/<int:band_id>/create/', views.create_song, name='create_song'),
     path('songs/<int:song_id>/edit/', views.edit_song, name='edit_song'),

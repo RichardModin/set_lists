@@ -17,7 +17,7 @@ class Song(models.Model):
     band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name='songs')  # New relationship
 
 class SetList(models.Model):
-    band = models.ForeignKey(Band, on_delete=models.CASCADE)
+    band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name='setlists')
     name = models.CharField(max_length=100)
     songs = models.ManyToManyField(Song, through='SetListSong')
     created_at = models.DateTimeField(auto_now_add=True)

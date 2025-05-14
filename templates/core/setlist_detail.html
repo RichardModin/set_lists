@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ setlist.name }}</h2>
+  <p class="text-muted">Band: <a href="{% url 'core:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
+
+  {% if setlist.songs.all %}
+    <ul class="list-group mt-4">
+      {% for song in setlist.songs.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ song.title }}</strong> by {{ song.artist }}
+            {% if song.key or song.tempo %}
+              <small class="text-muted d-block">
+                {% if song.key %}Key: {{ song.key }}{% endif %}
+                {% if song.tempo %} | Tempo: {{ song.tempo }} bpm{% endif %}
+              </small>
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="mt-4">This setlist is currently empty.</p>
+  {% endif %}
+
+  <div class="mt-4">
+    <a href="{% url 'core:band_detail' setlist.band.id %}" class="btn btn-secondary">Back to Band</a>
+    <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-primary">Edit Setlist</a>
+  </div>
+</div>
+{% endblock %}

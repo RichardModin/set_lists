@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login
-from .models import Band, SetList, BandInvite, Song
-from .forms import BandForm, SetListForm, UserRegisterForm,  SongForm
+from .models import Band, SetList, BandInvite, Song, SetListSong
+from .forms import BandForm, SetListForm, UserRegisterForm, SongForm
 
 
 def register(request):
@@ -13,7 +13,7 @@ def register(request):
             user = form.save()
             login(request, user)  # optionally log them in after registration
             messages.success(request, 'Account created successfully!')
-            return redirect('dashboard')  # or whatever your homepage is
+            return redirect('core:dashboard')
     else:
         form = UserRegisterForm()
     return render(request, 'registration/register.html', {'form': form})
@@ -67,8 +67,19 @@ def create_setlist(request, band_id):
             setlist = form.save(commit=False)
             setlist.band = band
             setlist.save()
-            form.save_m2m()
-            return redirect('core:band_detail', band_id=band.id)
+
+            # Process the songs for the setlist
+            song_ids = request.POST.getlist('songs')  # Get the list of song IDs
+            if song_ids:  # Ensure there are songs to process
+                for order, song_id in enumerate(song_ids, start=1):
+                    song = get_object_or_404(Song, id=song_id)
+                    SetListSong.objects.create(setlist=setlist, song=song, order=order)
+                return redirect('core:band_detail', band_id=band.id)
+            else:
+                # Handle the case where no songs are provided
+                messages.error(request, "You must add at least one song to the setlist.")
+                setlist.delete()  # Remove the empty setlist
+
     else:
         form = SetListForm()
     return render(request, 'core/setlist_form.html', {'form': form, 'band': band})
@@ -77,6 +88,46 @@ def create_setlist(request, band_id):
 def view_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     return render(request, 'core/setlist_detail.html', {'setlist': setlist})
+
+@login_required
+def edit_setlist(request, setlist_id):
+    setlist = get_object_or_404(SetList, id=setlist_id)
+    band = setlist.band
+
+    if request.method == 'POST':
+        form = SetListForm(request.POST, instance=setlist)
+        if form.is_valid():
+            setlist = form.save()
+
+            # Clear existing songs from the setlist
+            setlist.setlistsong_set.all().delete()
+
+            # Process the songs for the setlist
+            song_ids = request.POST.getlist('songs')  # Get the list of song IDs
+            if song_ids:  # Ensure there are songs to process
+                for order, song_id in enumerate(song_ids, start=1):
+                    song = get_object_or_404(Song, id=song_id)
+                    SetListSong.objects.create(setlist=setlist, song=song, order=order)
+            else:
+                # Handle the case where no songs are provided
+                messages.error(request, "You must add at least one song to the setlist.")
+                return render(request, 'core/setlist_form.html', {
+                    'form': form,
+                    'band': band,
+                    'setlist': setlist,
+                    'edit_mode': True,
+                })
+
+            return redirect('core:band_detail', band_id=band.id)
+    else:
+        form = SetListForm(instance=setlist)
+
+    return render(request, 'core/setlist_form.html', {
+        'form': form,
+        'band': band,
+        'setlist': setlist,
+        'edit_mode': True,
+    })
 
 @login_required
 def invite_member(request, band_id):
