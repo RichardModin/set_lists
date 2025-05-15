@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4 set-list-detail">
+<div class="container mt-5 set-list-detail">
   <h2>{{ setlist.name }}</h2>
   <p class="text-muted">Band: <a href="{% url 'bands:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
 

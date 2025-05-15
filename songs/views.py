@@ -38,7 +38,7 @@ def edit_song(request, song_id):
     else:
         form = SongForm(instance=song)
 
-    return render(request, 'songs/song_form.html', {'form': form, 'band': song.band, 'editing': True})
+    return render(request, 'songs/song_form.html', {'form': form, 'song': song, 'band': song.band, 'editing': True})
 
 @login_required
 def delete_song(request, song_id):
