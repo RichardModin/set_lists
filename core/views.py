@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.contrib import messages
 from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
@@ -14,9 +15,10 @@ def register(request):
         if passcode != SECRET_PASSCODE:
             messages.error(request, "Invalid passcode.")
         elif form.is_valid():
-            form.save()
+            user = form.save()
+            login(request, user)  # Log the user in
             messages.success(request, "Account created successfully!")
-            return redirect("login")
+            return redirect("core:dashboard")  # Redirect to the dashboard
     else:
         form = UserRegisterForm()
     return render(request, "registration/register.html", {"form": form})
