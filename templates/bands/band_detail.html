@@ -14,16 +14,19 @@
   </div>
 
   <!-- Band Members -->
-  <div class="mb-4">
-    <h4>Members</h4>
-    <ul class="list-group">
-      {% for member in band.members.all %}
-        <li class="list-group-item">{{ member.username }}</li>
-      {% empty %}
-        <li class="list-group-item text-muted">No members yet.</li>
-      {% endfor %}
-    </ul>
-  </div>
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4>Members</h4>
+        <a href="{% url 'bands:invite_member' band.id %}" class="btn btn-sm btn-primary">Invite Member</a>
+      </div>
+      <ul class="list-group mt-2">
+        {% for member in band.members.all %}
+          <li class="list-group-item">{{ member.username }}</li>
+        {% empty %}
+          <li class="list-group-item text-muted">No members yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
 
   <!-- Master Song List -->
   <div class="mb-4">

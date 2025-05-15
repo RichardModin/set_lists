@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
 from bands.models import Band, BandInvite
-from .forms import BandForm
+from .forms import BandForm, BandInviteForm
+
 
 # Create your views here.
 @login_required
@@ -51,10 +53,45 @@ def delete_band(request, band_id):
 @login_required
 def invite_member(request, band_id):
     band = get_object_or_404(Band, id=band_id)
+
     if request.method == 'POST':
-        email = request.POST.get('email')
-        if email:
-            invite = BandInvite.objects.create(band=band, invited_user=email)
-            # Send email logic here
+        form = BandInviteForm(request.POST)
+        if form.is_valid():
+            invited_user = form.cleaned_data['invited_user']
+
+            # Check if an invite already exists for this user and band
+            if BandInvite.objects.filter(band=band, invited_user=invited_user).exists():
+                messages.error(request, "This user has already been invited to the band.")
+                return redirect('bands:invite_member', band_id=band.id)
+
+            # Create a BandInvite
+            BandInvite.objects.create(
+                band=band,
+                invited_user=invited_user,
+                invited_by=request.user
+            )
+
+            messages.success(request, "Invitation sent successfully.")
             return redirect('bands:band_detail', band_id=band.id)
-    return render(request, 'bands/invite_member.html', {'band': band})
+    else:
+        form = BandInviteForm()
+
+    return render(request, 'bands/invite_user.html', {'form': form, 'band': band})
+
+@login_required
+def accept_invite(request, invite_id):
+    invite = get_object_or_404(BandInvite, id=invite_id)
+
+    # Only allow the invited user to accept the invite
+    if invite.invited_user != request.user:
+        return redirect('bands:band_detail', band_id=invite.band.id)
+
+    # Mark the invite as accepted
+    invite.accepted = True
+    invite.save()
+
+    # Add the user to the band
+    invite.band.members.add(request.user)
+
+    messages.success(request, "You have successfully joined the band.")
+    return redirect('bands:band_detail', band_id=invite.band.id)

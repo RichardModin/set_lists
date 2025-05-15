@@ -37,9 +37,12 @@
       <ul class="list-group list-group-flush">
         {% if invites %}
           {% for invite in invites %}
-            <li class="list-group-item">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
               Invited to join <strong>{{ invite.band.name }}</strong> by {{ invite.invited_by.username }}
-              <!-- You could add accept/reject buttons here -->
+              <form action="{% url 'bands:accept_invite' invite.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">Accept</button>
+              </form>
             </li>
           {% endfor %}
         {% else %}
