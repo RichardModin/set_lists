@@ -33,9 +33,11 @@
       <!-- Buttons -->
       <div class="col-md-6 text-end">
         <button type="submit" class="btn btn-primary">Save Setlist</button>
-        <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
         {% if edit_mode %}
+          <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-secondary">Cancel</a>
           <a href="{% url 'core:delete_setlist' setlist.id %}" class="btn btn-danger">Delete</a>
+        {% else %}
+          <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
         {% endif %}
       </div>
     </div>
