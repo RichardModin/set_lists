@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+import csv
+from io import TextIOWrapper
 
 from .forms import SongForm
 from .models import Song
@@ -45,3 +49,34 @@ def delete_song(request, song_id):
         return redirect('bands:band_detail', band_id=band.id)  # Update with your actual song list URL name
 
     return render(request, 'songs/song_confirm_delete.html', {'song': song, 'band': band})
+
+@login_required
+def upload_csv(request, band_id):
+    band = get_object_or_404(Band, id=band_id)
+
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Please upload a valid CSV file.')
+            return redirect('songs:upload_csv', band_id=band.id)
+
+        try:
+            csv_data = TextIOWrapper(csv_file.file, encoding='utf-8')
+            reader = csv.DictReader(csv_data)
+            for row in reader:
+                tempo = row.get('tempo', '').strip()
+                Song.objects.create(
+                    band=band,
+                    title=row.get('title', '').strip(),
+                    artist=row.get('artist', '').strip(),
+                    key=row.get('key', '').strip() if 'key' in row else None,
+                    tempo=float(tempo) if tempo.isdigit() else None,
+                    created_by=request.user
+                )
+            messages.success(request, 'Songs imported successfully!')
+            return redirect('bands:band_detail', band_id=band.id)
+        except Exception as e:
+            messages.error(request, f'Error processing file: {e}')
+            return redirect('songs:upload_csv', band_id=band.id)
+
+    return render(request, 'songs/upload_csv.html', {'band': band})

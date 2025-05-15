@@ -6,6 +6,7 @@ class ClearMessagesMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if hasattr(request, '_messages'):
+        # Only clear messages for non-redirect responses
+        if hasattr(request, '_messages') and not response.has_header('Location'):
             list(get_messages(request))  # Retrieve and clear messages
         return response
