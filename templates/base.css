@@ -1,0 +1,26 @@
+@media print {
+
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .navbar,
+    .set-list-detail .btn,
+    .set-list-detail h2,
+    .set-list-detail p,
+    .set-list-detail span,
+    .set-list-detail small {
+        display: none !important;
+    }
+
+    .list-group ul, .list-group li {
+        width: 100% !important;
+        border: 0 !important;
+    }
+
+    li {
+        font-size: 2em;
+    }
+}

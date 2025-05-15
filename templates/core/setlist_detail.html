@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 set-list-detail">
   <h2>{{ setlist.name }}</h2>
   <p class="text-muted">Band: <a href="{% url 'bands:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
 
@@ -9,7 +9,7 @@
       {% for song in setlist.songs.all %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div>
-            <strong>{{ song.title }}</strong> by {{ song.artist }}
+            <strong>{{ song.title }}</strong> <span>by {{ song.artist }}</span>
             {% if song.key or song.tempo %}
               <small class="text-muted d-block">
                 {% if song.key %}Key: {{ song.key }}{% endif %}
