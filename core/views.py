@@ -6,19 +6,21 @@ from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
 from .forms import SetListForm, UserRegisterForm
 
+SECRET_PASSCODE = "dwkjtvssgssfdhajk"
 
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # optionally log them in after registration
-            messages.success(request, 'Account created successfully!')
-            return redirect('core:dashboard')
+        passcode = request.POST.get("passcode")
+        if passcode != SECRET_PASSCODE:
+            messages.error(request, "Invalid passcode.")
+        elif form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully!")
+            return redirect("login")
     else:
         form = UserRegisterForm()
-    return render(request, 'registration/register.html', {'form': form})
-
+    return render(request, "registration/register.html", {"form": form})
 
 @login_required
 def dashboard(request):
