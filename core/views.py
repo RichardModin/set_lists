@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import login
 from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
 from .forms import SetListForm, UserRegisterForm
@@ -92,3 +91,15 @@ def edit_setlist(request, setlist_id):
         'setlist': setlist,
         'edit_mode': True,
     })
+
+@login_required
+def delete_setlist(request, setlist_id):
+    setlist = get_object_or_404(SetList, id=setlist_id)
+    band = setlist.band
+
+    if request.method == "POST":
+        setlist.delete()
+        messages.success(request, "Setlist deleted successfully.")
+        return redirect('bands:band_detail', band_id=band.id)
+
+    return render(request, 'core/setlist_confirm_delete.html', {'setlist': setlist})
