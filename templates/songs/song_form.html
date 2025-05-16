@@ -46,6 +46,31 @@
           <div class="invalid-feedback">{{ error }}</div>
         {% endfor %}
       </div>
+
+      <div class="form-group">
+        <label for="id_general_notes">General Notes</label>
+        <textarea name="general_notes" class="form-control wysiwyg-editor {% if form.general_notes.errors %}is-invalid{% endif %}" id="id_general_notes" rows="10">{{ form.general_notes.value|default_if_none:'' }}</textarea>
+        {% for error in form.general_notes.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_my_notes">My Notes</label>
+        <textarea name="my_notes" class="form-control wysiwyg-editor" id="id_my_notes" rows="10">{{ user_note.content|default_if_none:'' }}</textarea>
+      </div>
     </form>
   </div>
+
+  <!-- Include TinyMCE -->
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script>
+    tinymce.init({
+      selector: '.wysiwyg-editor',
+      menubar: false,
+      plugins: 'lists link table code',
+      toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+      height: 300
+    });
+  </script>
 {% endblock %}

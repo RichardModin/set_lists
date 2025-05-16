@@ -8,10 +8,9 @@
 
     .navbar,
     .set-list-detail .btn,
+    .song-detail .btn,
     .set-list-detail h2,
-    .set-list-detail p,
-    .set-list-detail span,
-    .set-list-detail small {
+    .set-list-detail p{
         display: none !important;
     }
 

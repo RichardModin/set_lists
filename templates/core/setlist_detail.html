@@ -12,7 +12,6 @@
     </div>
   </div>
 
-
   {% if setlist.songs.all %}
     <ul class="list-group mt-4">
       {% for song in setlist.songs.all %}
@@ -20,11 +19,14 @@
           <div>
             <strong>{{ song.title }}</strong> <span>by {{ song.artist }}</span>
             {% if song.key or song.tempo %}
-            {% endif %}
               <small class="text-muted d-block">
                 {% if song.key %}Key: {{ song.key }}{% endif %}
                 {% if song.tempo %} | Tempo: {{ song.tempo }} bpm{% endif %}
               </small>
+            {% endif %}
+          </div>
+          <div>
+            <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-outline-primary">View Song</a>
           </div>
         </li>
       {% endfor %}

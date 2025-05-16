@@ -6,7 +6,7 @@ import csv
 from io import TextIOWrapper
 
 from .forms import SongForm
-from .models import Song
+from .models import Song, Notes
 from bands.models import Band
 
 # Create your views here.
@@ -27,18 +27,40 @@ def create_song(request, band_id):
     return render(request, 'songs/song_form.html', {'form': form, 'band': band})
 
 @login_required
+def view_song(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    user_note = Notes.objects.filter(song=song, user=request.user).first()
+
+    return render(request, 'songs/song_detail.html', {
+        'song': song,
+        'user_note': user_note,
+    })
+
+@login_required
 def edit_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
+
+    # Use get_or_create to ensure no duplicate entries
+    note, created = Notes.objects.get_or_create(song=song, user=request.user)
 
     if request.method == "POST":
         form = SongForm(request.POST, instance=song)
         if form.is_valid():
             form.save()
+            note_content = request.POST.get('my_notes', '').strip()
+            note.content = note_content
+            note.save()
             return redirect('bands:band_detail', band_id=song.band.id)
     else:
         form = SongForm(instance=song)
 
-    return render(request, 'songs/song_form.html', {'form': form, 'song': song, 'band': song.band, 'editing': True})
+    return render(request, 'songs/song_form.html', {
+        'form': form,
+        'song': song,
+        'band': song.band,
+        'editing': True,
+        'user_note': note,
+    })
 
 @login_required
 def delete_song(request, song_id):

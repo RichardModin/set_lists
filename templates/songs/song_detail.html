@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 song-detail">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>{{ song.title }}</h1>
+    <div>
+      <a href="{% url 'songs:edit_song' song.id %}" class="btn btn-primary">Edit Song</a>
+    </div>
+  </div>
+  <p><strong>Artist:</strong> {{ song.artist }}</p>
+  <p><strong>Key:</strong> {{ song.key|default:"N/A" }}</p>
+  <p><strong>Tempo:</strong> {{ song.tempo|default:"N/A" }}</p>
+  <hr>
+  <p><strong>General Notes:</strong></p>
+  <div>{{ song.general_notes|safe }}</div>
+  <hr>
+  <p><strong>My Notes:</strong></p>
+  <div>{{ user_note.content|safe }}</div>
+</div>
+{% endblock %}
