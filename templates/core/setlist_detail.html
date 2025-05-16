@@ -5,10 +5,7 @@
 {% block content %}
 <div class="container mt-5 set-list-detail">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h2 class="mb-0">{{ setlist.name }}</h2>
-      <p class="text-muted">Band: <a href="{% url 'bands:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
-    </div>
+    <h2 class="mb-0">Set List: {{ setlist.name }}</h2>
     <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-primary">Edit Setlist</a>
   </div>
 
@@ -22,6 +19,7 @@
               <small class="text-muted d-block">
                 {% if song.key %}Key: {{ song.key }}{% endif %}
                 {% if song.tempo %} | Tempo: {{ song.tempo }} bpm{% endif %}
+                {% if song.genre %} | Genre: {{ song.genre }}{% endif %}
               </small>
             {% endif %}
           </div>

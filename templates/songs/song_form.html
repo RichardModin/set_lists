@@ -52,6 +52,11 @@
       </div>
 
       <div class="form-group">
+        <label for="id_genre">Genre (optional)</label>
+        <input type="text" name="genre" id="id_genre" class="form-control" value="{{ form.genre.value|default:'' }}">
+      </div>
+
+      <div class="form-group">
         <label for="id_general_notes">General Notes</label>
         <textarea name="general_notes" class="form-control wysiwyg-editor {% if form.general_notes.errors %}is-invalid{% endif %}" id="id_general_notes" rows="10">{{ form.general_notes.value|default_if_none:'' }}</textarea>
         {% for error in form.general_notes.errors %}

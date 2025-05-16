@@ -71,7 +71,7 @@ def breadcrumbs(request):
                 band_id = setlist.band.id
                 band_name = setlist.band.name
                 breadcrumbs.append({'name': band_name, 'url': f'/bands/{band_id}/'})
-                breadcrumbs.append({'name': f'Setlist {setlist.name}', 'url': None})
+                breadcrumbs.append({'name': f'Set List: {setlist.name}', 'url': None})
             except SetList.DoesNotExist:
                 pass
 
@@ -79,7 +79,7 @@ def breadcrumbs(request):
             try:
                 band = Band.objects.get(id=band_id)
                 breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/'})
-                breadcrumbs.append({'name': 'Create Setlist', 'url': None})
+                breadcrumbs.append({'name': 'Create Set List', 'url': None})
             except Band.DoesNotExist:
                 pass
         elif 'edit' in request.path:

@@ -3,53 +3,49 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-8 offset-md-2">
-    <h1 class="mb-4">Welcome, {{ user.username }}!</h1>
+<div class="container mt-5">
+  <h1 class="mb-4">Welcome, {{ user.username }}!</h1>
 
-    <!-- Your Bands -->
-    <div class="card mb-4">
-      <div class="card-header">
-        Your Bands
-      </div>
-      <ul class="list-group list-group-flush">
-        {% if bands %}
-          {% for band in bands %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              {{ band.name }}
-              <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-sm btn-outline-primary">View</a>
-            </li>
-          {% endfor %}
-        {% else %}
-          <li class="list-group-item text-muted">You're not in any bands yet.</li>
-        {% endif %}
-      </ul>
-      <div class="card-footer text-end">
-        <a href="{% url 'bands:create_band' %}" class="btn btn-primary">Create Band</a>
-      </div>
+  <!-- Your Bands -->
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Your Bands</span>
+      <a href="{% url 'bands:create_band' %}" class="btn btn-primary">Create Band</a>
     </div>
+    <ul class="list-group list-group-flush">
+      {% if bands %}
+        {% for band in bands %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ band.name }}
+            <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-sm btn-outline-primary">View</a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item text-muted">You're not in any bands yet.</li>
+      {% endif %}
+    </ul>
+  </div>
 
-    <!-- Invitations -->
-    <div class="card">
-      <div class="card-header">
-        Band Invitations
-      </div>
-      <ul class="list-group list-group-flush">
-        {% if invites %}
-          {% for invite in invites %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              Invited to join <strong>{{ invite.band.name }}</strong> by {{ invite.invited_by.username }}
-              <form action="{% url 'bands:accept_invite' invite.id %}" method="post" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-success">Accept</button>
-              </form>
-            </li>
-          {% endfor %}
-        {% else %}
-          <li class="list-group-item text-muted">No pending invitations.</li>
-        {% endif %}
-      </ul>
+  <!-- Invitations -->
+  <div class="card">
+    <div class="card-header">
+      Band Invitations
     </div>
+    <ul class="list-group list-group-flush">
+      {% if invites %}
+        {% for invite in invites %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Invited to join <strong>{{ invite.band.name }}</strong> by {{ invite.invited_by.username }}
+            <form action="{% url 'bands:accept_invite' invite.id %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-success">Accept</button>
+            </form>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item text-muted">No pending invitations.</li>
+      {% endif %}
+    </ul>
   </div>
 </div>
 {% endblock %}

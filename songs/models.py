@@ -8,6 +8,7 @@ class Song(models.Model):
     artist = models.CharField(max_length=100)
     key = models.CharField(max_length=5, null=True, blank=True)
     tempo = models.IntegerField(null=True, blank=True)
+    genre = models.CharField(max_length=50, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name='songs')
     general_notes = models.TextField(null=True, blank=True)
