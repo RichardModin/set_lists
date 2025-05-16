@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
 
 import csv
 from io import TextIOWrapper
@@ -43,6 +44,9 @@ def edit_song(request, song_id):
     # Use get_or_create to ensure no duplicate entries
     note, created = Notes.objects.get_or_create(song=song, user=request.user)
 
+    # TinyMCE key for the editor
+    tinymce_key = settings.TINYMCE_KEY
+
     if request.method == "POST":
         form = SongForm(request.POST, instance=song)
         if form.is_valid():
@@ -60,6 +64,7 @@ def edit_song(request, song_id):
         'band': song.band,
         'editing': True,
         'user_note': note,
+        'tinymce_key': tinymce_key,
     })
 
 @login_required
