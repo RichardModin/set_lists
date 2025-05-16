@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from bands.models import Band, BandInvite
+from core.decorators import user_has_access_to_band_or_song
 from .forms import BandForm, BandInviteForm
 
 
@@ -19,6 +20,7 @@ def create_band(request):
     return render(request, 'bands/band_form.html', {'form': form})
 
 @login_required
+@user_has_access_to_band_or_song
 def edit_band(request, band_id):
     band = get_object_or_404(Band, id=band_id)
 
@@ -34,6 +36,7 @@ def edit_band(request, band_id):
 
 
 @login_required
+@user_has_access_to_band_or_song
 def band_detail(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     unique_artists = band.songs.values_list('artist', flat=True).distinct()
@@ -50,6 +53,7 @@ def delete_band(request, band_id):
     return redirect('bands:band_detail', band_id=band.id)
 
 @login_required
+@user_has_access_to_band_or_song
 def invite_member(request, band_id):
     band = get_object_or_404(Band, id=band_id)
 

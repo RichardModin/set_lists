@@ -6,12 +6,14 @@ from django.conf import settings
 import csv
 from io import TextIOWrapper
 
+from core.decorators import user_has_access_to_band_or_song
 from .forms import SongForm
 from .models import Song, Notes
 from bands.models import Band
 
 # Create your views here.
 @login_required
+@user_has_access_to_band_or_song
 def create_song(request, band_id):
     band = get_object_or_404(Band, id=band_id)  # Get the band
 
@@ -36,6 +38,7 @@ def create_song(request, band_id):
     return render(request, 'songs/song_form.html', {'form': form, 'band': band, 'tinymce_key': tinymce_key})
 
 @login_required
+@user_has_access_to_band_or_song
 def view_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
     user_note = Notes.objects.filter(song=song, user=request.user).first()
@@ -46,6 +49,7 @@ def view_song(request, song_id):
     })
 
 @login_required
+@user_has_access_to_band_or_song
 def edit_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
 
@@ -76,6 +80,7 @@ def edit_song(request, song_id):
     })
 
 @login_required
+@user_has_access_to_band_or_song
 def delete_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
     band = song.band
@@ -86,6 +91,7 @@ def delete_song(request, song_id):
     return render(request, 'songs/song_confirm_delete.html', {'song': song, 'band': band})
 
 @login_required
+@user_has_access_to_band_or_song
 def upload_csv(request, band_id):
     band = get_object_or_404(Band, id=band_id)
 

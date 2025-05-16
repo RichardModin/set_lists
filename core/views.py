@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
+
+from .decorators import user_has_access_to_band_or_song
 from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
 from .forms import SetListForm, UserRegisterForm
@@ -30,11 +32,13 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', {'bands': user_bands, 'invites': invites})
 
 @login_required
+@user_has_access_to_band_or_song
 def view_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     return render(request, 'core/setlist_detail.html', {'setlist': setlist})
 
 @login_required
+@user_has_access_to_band_or_song
 def create_setlist(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     if request.method == 'POST':
@@ -61,6 +65,7 @@ def create_setlist(request, band_id):
     return render(request, 'core/setlist_form.html', {'form': form, 'band': band})
 
 @login_required
+@user_has_access_to_band_or_song
 def edit_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     band = setlist.band
@@ -95,6 +100,7 @@ def edit_setlist(request, setlist_id):
     })
 
 @login_required
+@user_has_access_to_band_or_song
 def delete_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     band = setlist.band
