@@ -19,3 +19,31 @@
         border: 0 !important;
     }
 }
+
+.members-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+
+.members-list li {
+  display: inline;
+  border: 0;
+  padding: 0;
+  font-size: 1.2rem; /* Larger font size */
+  color: #6c757d; /* Light grey color */
+}
+
+.members-list li:not(:last-child)::after {
+  content: ", ";
+}
+
+#songs, #setlists {
+    border-left: 1px solid #dee2e6;
+    padding-left: 1rem;
+    border-right: 1px solid #dee2e6;
+    padding-right: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}

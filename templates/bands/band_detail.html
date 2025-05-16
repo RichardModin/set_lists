@@ -5,55 +5,64 @@
 {% block content %}
 <div class="container mt-5">
   <div class="d-flex justify-content-between align-items-center">
-    <h2>{{ band.name }}</h2>
-    <a href="{% url 'bands:edit_band' band.id %}" class="btn btn-primary me-2">Edit</a>
-  </div>
-
-  <!-- Band Members -->
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center">
-      <h4>Members</h4>
-      <a href="{% url 'bands:invite_member' band.id %}" class="btn btn-sm btn-primary">Invite Member</a>
-    </div>
-    <ul class="list-group mt-2">
-      {% for member in band.members.all %}
+    <div>
+      <h2 class="d-inline">{{ band.name }}</h2>
+      <ul class="list-group mt-2 members-list">
+        {% for member in band.members.all %}
         <li class="list-group-item">{{ member.username }}</li>
-      {% empty %}
+        {% empty %}
         <li class="list-group-item text-muted">No members yet.</li>
-      {% endfor %}
-    </ul>
+        {% endfor %}
+      </ul>
+    </div>
+    <div>
+      <a href="{% url 'bands:invite_member' band.id %}" class="btn btn-outline-primary">Invite Member</a>
+      <a href="{% url 'bands:edit_band' band.id %}" class="btn btn-primary">Edit</a>
+    </div>
   </div>
 
-  <!-- Master Song List -->
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center">
-      <h4>Master Song List</h4>
-      <div>
-        <a href="{% url 'songs:create_song' band.id %}" class="btn btn-sm btn-primary">Create New Song</a>
-        <a href="{% url 'songs:upload_csv' band.id %}" class="btn btn-sm btn-secondary">Upload CSV</a>
+  <!-- Tabs Navigation -->
+  <ul class="nav nav-tabs mt-4" id="bandTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="songs-tab" data-bs-toggle="tab" data-bs-target="#songs" type="button" role="tab" aria-controls="songs" aria-selected="true">Master Song List</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="setlists-tab" data-bs-toggle="tab" data-bs-target="#setlists" type="button" role="tab" aria-controls="setlists" aria-selected="false">Set Lists</button>
+    </li>
+  </ul>
+
+  <!-- Tabs Content -->
+  <div class="tab-content" id="bandTabsContent">
+    <!-- Master Song List Tab -->
+    <div class="tab-pane fade show active" id="songs" role="tabpanel" aria-labelledby="songs-tab">
+      <div class="d-flex justify-content-between align-items-center pt-3">
+        <h4>Master Song List</h4>
+        <div>
+          <a href="{% url 'songs:create_song' band.id %}" class="btn btn-sm btn-primary">Create New Song</a>
+          <a href="{% url 'songs:upload_csv' band.id %}" class="btn btn-sm btn-secondary">Upload CSV</a>
+        </div>
       </div>
-    </div>
-    <div class="mb-2">
-      <label for="artistFilter" class="form-label">Filter by Artist:</label>
-      <select id="artistFilter" class="form-select">
-        <option value="">All Artists</option>
-        {% for artist in unique_artists %}
+      <div class="mb-2">
+        <label for="artistFilter" class="form-label">Filter by Artist:</label>
+        <select id="artistFilter" class="form-select">
+          <option value="">All Artists</option>
+          {% for artist in unique_artists %}
           <option value="{{ artist }}">{{ artist }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <table id="songsTable" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Artist</th>
-          <th>Key</th>
-          <th>Tempo</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for song in band.songs.all %}
+          {% endfor %}
+        </select>
+      </div>
+      <table id="songsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Key</th>
+            <th>Tempo</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for song in band.songs.all %}
           <tr>
             <td>{{ song.title }}</td>
             <td>{{ song.artist }}</td>
@@ -64,27 +73,28 @@
               <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-outline-primary">View</a>
             </td>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Set Lists -->
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center">
-      <h4>Set Lists</h4>
-      <a href="{% url 'core:create_setlist' band.id %}" class="btn btn-sm btn-primary">Create New Setlist</a>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-    <ul class="list-group mt-2">
-      {% for setlist in band.setlists.all %}
+
+    <!-- Set Lists Tab -->
+    <div class="tab-pane fade" id="setlists" role="tabpanel" aria-labelledby="setlists-tab">
+      <div class="d-flex justify-content-between align-items-center pt-3">
+        <h4>Set Lists</h4>
+        <a href="{% url 'core:create_setlist' band.id %}" class="btn btn-sm btn-primary">Create New Setlist</a>
+      </div>
+      <ul class="list-group mt-2">
+        {% for setlist in band.setlists.all %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           {{ setlist.name }}
           <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-outline-primary">View</a>
         </li>
-      {% empty %}
+        {% empty %}
         <li class="list-group-item text-muted">No set lists yet.</li>
-      {% endfor %}
-    </ul>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 </div>
 
