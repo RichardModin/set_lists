@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-{% block content %}
 
+{% block title %}Delete: {{ song.title }}{% endblock %}
+
+{% block content %}
 <div class="container mt-5">
     <h2>Confirm Delete</h2>
     <p>Are you sure you want to delete the song <strong>{{ song.title }}</strong> by {{ song.artist }}?</p>
@@ -11,6 +13,4 @@
       <button type="submit" class="btn btn-danger">Delete</button>
     </form>
 </div>
-
-
 {% endblock %}

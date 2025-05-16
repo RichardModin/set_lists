@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}
+  {% if editing %}Edit: {{ band.name }}{% else %}Create Band{% endif %}
+{% endblock %}
+
 {% block content %}
   <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">

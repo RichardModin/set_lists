@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}
+  {% if editing %}Edit: {{ song.title }}{% else %}Create Song{% endif %}
+{% endblock %}
+
 {% block content %}
   <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center">

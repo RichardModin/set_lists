@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}
+  {% if editing %}Edit: {{ setlist.title }}{% else %}Create SetList{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
 
