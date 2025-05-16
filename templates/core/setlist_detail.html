@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5 set-list-detail">
-  <h2>{{ setlist.name }}</h2>
-  <p class="text-muted">Band: <a href="{% url 'bands:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="mb-0">{{ setlist.name }}</h2>
+      <p class="text-muted">Band: <a href="{% url 'bands:band_detail' setlist.band.id %}">{{ setlist.band.name }}</a></p>
+    </div>
+    <div>
+      <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-primary">Edit Setlist</a>
+      <a href="{% url 'bands:band_detail' setlist.band.id %}" class="btn btn-secondary me-2">Back to Band</a>
+    </div>
+  </div>
+
 
   {% if setlist.songs.all %}
     <ul class="list-group mt-4">
@@ -11,11 +20,11 @@
           <div>
             <strong>{{ song.title }}</strong> <span>by {{ song.artist }}</span>
             {% if song.key or song.tempo %}
+            {% endif %}
               <small class="text-muted d-block">
                 {% if song.key %}Key: {{ song.key }}{% endif %}
                 {% if song.tempo %} | Tempo: {{ song.tempo }} bpm{% endif %}
               </small>
-            {% endif %}
           </div>
         </li>
       {% endfor %}
@@ -23,10 +32,5 @@
   {% else %}
     <p class="mt-4">This setlist is currently empty.</p>
   {% endif %}
-
-  <div class="mt-4">
-    <a href="{% url 'bands:band_detail' setlist.band.id %}" class="btn btn-secondary">Back to Band</a>
-    <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-primary">Edit Setlist</a>
-  </div>
 </div>
 {% endblock %}
