@@ -10,7 +10,8 @@
     .set-list-detail .btn,
     .song-detail .btn,
     .set-list-detail h2,
-    .set-list-detail p{
+    .set-list-detail p,
+    .breadcrumb {
         display: none !important;
     }
 
@@ -39,7 +40,7 @@
   content: ", ";
 }
 
-#songs, #setlists {
+#songs, #setlists, #notes {
     border-left: 1px solid #dee2e6;
     padding-left: 1rem;
     border-right: 1px solid #dee2e6;

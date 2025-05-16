@@ -14,11 +14,15 @@ from bands.models import Band
 # Create your views here.
 @login_required
 @user_has_access_to_band_or_song
+@login_required
+@user_has_access_to_band_or_song
 def create_song(request, band_id):
     band = get_object_or_404(Band, id=band_id)  # Get the band
 
     # TinyMCE key for the editor
     tinymce_key = settings.TINYMCE_KEY
+
+    note = None  # Initialize note as None
 
     if request.method == "POST":
         form = SongForm(request.POST)
@@ -27,15 +31,21 @@ def create_song(request, band_id):
             song.band = band  # Associate the song with the band
             song.created_by = request.user  # Set the created_by field to the current user
             song.save()
+            # Retrieve the user's note for the song, if it exists
             note_content = request.POST.get('my_notes', '').strip()
-            if note_content:  # Check if my_notes is not empty
-                note = Notes.objects.create(song=song, user=request.user, content=note_content)
+            if note_content and note_content != '<p></p>':  # Check if my_notes is not empty
+                note = Notes(song=song, user=request.user, content=note_content)
                 note.save()
             return redirect('bands:band_detail', band_id=band.id)  # Redirect to the band detail page
     else:
         form = SongForm()
 
-    return render(request, 'songs/song_form.html', {'form': form, 'band': band, 'tinymce_key': tinymce_key})
+    return render(request, 'songs/song_form.html', {
+        'form': form,
+        'band': band,
+        'tinymce_key': tinymce_key,
+        'note': note  # Pass note to the template
+    })
 
 @login_required
 @user_has_access_to_band_or_song
@@ -53,19 +63,23 @@ def view_song(request, song_id):
 def edit_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
 
-    # Use get_or_create to ensure no duplicate entries
-    note, created = Notes.objects.get_or_create(song=song, user=request.user)
-
     # TinyMCE key for the editor
     tinymce_key = settings.TINYMCE_KEY
+
+    # Retrieve the user's note for the song, if it exists
+    note = Notes.objects.filter(song=song, user=request.user).first()
 
     if request.method == "POST":
         form = SongForm(request.POST, instance=song)
         if form.is_valid():
             form.save()
             note_content = request.POST.get('my_notes', '').strip()
-            note.content = note_content
-            note.save()
+            if note_content and note_content != '<p></p>':  # Check if my_notes is not empty
+                if note:
+                    note.content = note_content
+                else:
+                    note = Notes(song=song, user=request.user, content=note_content)
+                note.save()
             return redirect('bands:band_detail', band_id=song.band.id)
     else:
         form = SongForm(instance=song)

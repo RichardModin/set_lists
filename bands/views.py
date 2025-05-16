@@ -40,7 +40,12 @@ def edit_band(request, band_id):
 def band_detail(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     unique_artists = band.songs.values_list('artist', flat=True).distinct()
-    return render(request, 'bands/band_detail.html', {'band': band, 'unique_artists': unique_artists})
+    user_notes = request.user.notes.filter(song__band_id=band_id)
+    return render(request, 'bands/band_detail.html', {
+        'band': band,
+        'unique_artists': unique_artists,
+        'user_notes': user_notes
+    })
 
 @login_required
 def delete_band(request, band_id):
