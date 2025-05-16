@@ -14,6 +14,10 @@ from bands.models import Band
 @login_required
 def create_song(request, band_id):
     band = get_object_or_404(Band, id=band_id)  # Get the band
+
+    # TinyMCE key for the editor
+    tinymce_key = settings.TINYMCE_KEY
+
     if request.method == "POST":
         form = SongForm(request.POST)
         if form.is_valid():
@@ -21,11 +25,15 @@ def create_song(request, band_id):
             song.band = band  # Associate the song with the band
             song.created_by = request.user  # Set the created_by field to the current user
             song.save()
+            note_content = request.POST.get('my_notes', '').strip()
+            if note_content:  # Check if my_notes is not empty
+                note = Notes.objects.create(song=song, user=request.user, content=note_content)
+                note.save()
             return redirect('bands:band_detail', band_id=band.id)  # Redirect to the band detail page
     else:
         form = SongForm()
 
-    return render(request, 'songs/song_form.html', {'form': form, 'band': band})
+    return render(request, 'songs/song_form.html', {'form': form, 'band': band, 'tinymce_key': tinymce_key})
 
 @login_required
 def view_song(request, song_id):
