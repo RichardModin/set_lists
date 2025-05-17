@@ -48,6 +48,7 @@ def band_detail(request, band_id):
     })
 
 @login_required
+@user_has_access_to_band_or_song
 def delete_band(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     if request.method == "POST":

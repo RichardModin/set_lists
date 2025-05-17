@@ -14,8 +14,6 @@ from bands.models import Band
 # Create your views here.
 @login_required
 @user_has_access_to_band_or_song
-@login_required
-@user_has_access_to_band_or_song
 def create_song(request, band_id):
     band = get_object_or_404(Band, id=band_id)  # Get the band
 
