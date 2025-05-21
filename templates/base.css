@@ -5,6 +5,7 @@
         padding: 0 !important;
     }
 
+    #songsTable,
     .navbar,
     .set-list-detail .btn,
     .song-detail .btn,
@@ -18,9 +19,16 @@
         width: 100% !important;
         border: 0 !important;
     }
+
+    .print-only {
+        display: block !important;
+    }
 }
 
-/*
+.print-only {
+    display: none;
+}
+
 #songs, #setlists, #notes {
     border-left: 1px solid #dee2e6;
     padding-left: 1rem;
@@ -29,4 +37,3 @@
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 1rem;
 }
-*/

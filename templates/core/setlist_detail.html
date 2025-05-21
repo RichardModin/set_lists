@@ -10,7 +10,39 @@
   </div>
 
   {% if setlist.songs.all %}
-    <ul class="list-group mt-4">
+    <table id="songsTable" class="table table-striped table-bordered mt-4">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th>
+          <th>Key</th>
+          <th>Tempo</th>
+          <th>Genre</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for song in setlist.songs.all %}
+          <tr>
+            <td><strong>{{ song.title }}</strong></td>
+            <td>{{ song.artist }}</td>
+            <td>{{ song.key }}</td>
+            <td>{{ song.tempo }} bpm</td>
+            <td>{{ song.genre }}</td>
+            <td>
+              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-outline-primary">View Song</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="mt-4">This setlist is currently empty.</p>
+  {% endif %}
+
+
+  {% if setlist.songs.all %}
+    <ul class="list-group mt-4 print-only">
       {% for song in setlist.songs.all %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div>
@@ -23,14 +55,25 @@
               </small>
             {% endif %}
           </div>
-          <div>
-            <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-outline-primary">View Song</a>
-          </div>
         </li>
       {% endfor %}
     </ul>
-  {% else %}
-    <p class="mt-4">This setlist is currently empty.</p>
   {% endif %}
 </div>
+
+<!-- Include DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#songsTable').DataTable({
+      searching: false,
+      ordering: false,
+      paging: false,
+      info: false
+    });
+  });
+</script>
 {% endblock %}
