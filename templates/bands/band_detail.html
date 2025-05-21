@@ -113,7 +113,7 @@
                 {% endif %}
               </div>
               {% if note.song %}
-              <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm secondary">View</a>
+              <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-secondary">View</a>
               {% endif %}
             </div>
             <p class="mt-2">{{ note.content|safe }}</p>
