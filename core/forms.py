@@ -13,3 +13,11 @@ class SetListForm(forms.ModelForm):
     class Meta:
         model = SetList
         fields = ['name', 'songs']
+
+class DuplicateSetListForm(forms.ModelForm):
+    class Meta:
+        model = SetList
+        fields = ['name']
+        labels = {
+            'name': 'New Set List Name'
+        }

@@ -6,7 +6,7 @@ from django.contrib import messages
 from .decorators import user_has_access_to_band_or_song
 from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
-from .forms import SetListForm, UserRegisterForm
+from .forms import SetListForm, UserRegisterForm, DuplicateSetListForm
 
 SECRET_PASSCODE = "dwkjtvssgssfdhajk"
 
@@ -36,6 +36,34 @@ def dashboard(request):
 def view_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     return render(request, 'core/setlist_detail.html', {'setlist': setlist})
+
+@login_required
+@user_has_access_to_band_or_song
+def duplicate_setlist(request, setlist_id):
+    original_setlist = get_object_or_404(SetList, id=setlist_id)
+    band = original_setlist.band
+
+    if request.method == "POST":
+        form = DuplicateSetListForm(request.POST)
+        if form.is_valid():
+            new_name = form.cleaned_data["name"]
+            new_setlist = SetList.objects.create(name=new_name, band=band)
+            for sl_song in original_setlist.setlistsong_set.all():
+                SetListSong.objects.create(
+                    setlist=new_setlist,
+                    song=sl_song.song,
+                    order=sl_song.order
+                )
+            messages.success(request, "Set list duplicated successfully.")
+            return redirect("bands:band_detail", band_id=band.id)
+    else:
+        form = DuplicateSetListForm(initial={"name": f"{original_setlist.name} (Copy)"})
+
+    return render(request, "core/duplicate_setlist.html", {
+        "form": form,
+        "original_setlist": original_setlist,
+        "band": band,
+    })
 
 @login_required
 @user_has_access_to_band_or_song

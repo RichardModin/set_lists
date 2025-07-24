@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Duplicate Set List: {{ original_setlist.name }}{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Duplicate Set List: {{ original_setlist.name }}</h2>
+      <div>
+        <button type="submit" form="duplicate-form" class="btn btn-primary">Confirm</button>
+        <a href="{% url 'core:view_setlist' original_setlist.id %}" class="btn btn-secondary ms-2">Cancel</a>
+      </div>
+    </div>
+
+    <form id="duplicate-form" method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.name.label_tag }}
+        <input type="text" name="name" class="form-control{% if form.name.errors %} is-invalid{% endif %}" id="id_name" value="{{ form.name.value|default_if_none:'' }}">
+        {% for error in form.name.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+{% endblock %}
