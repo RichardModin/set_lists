@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from songs.models import Notes
 from .decorators import user_has_access_to_band_or_song
 from .models import SetList, Song, SetListSong
 from bands.models import Band, BandInvite
@@ -139,3 +142,15 @@ def delete_setlist(request, setlist_id):
         return redirect('bands:band_detail', band_id=band.id)
 
     return render(request, 'core/setlist_confirm_delete.html', {'setlist': setlist})
+
+@require_POST
+@login_required
+@user_has_access_to_band_or_song
+def delete_note(request):
+    note_id = request.POST.get('note_id')
+    try:
+        note = Notes.objects.get(id=note_id, user=request.user)
+        note.delete()
+        return JsonResponse({'success': True})
+    except Notes.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Note not found'}, status=404)
