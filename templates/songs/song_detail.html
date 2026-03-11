@@ -13,6 +13,7 @@
   <p><strong>Artist:</strong> {{ song.artist }}</p>
   <p><strong>Key:</strong> {{ song.key|default:"N/A" }}</p>
   <p><strong>Tempo:</strong> {{ song.tempo|default:"N/A" }}</p>
+  <p><strong>URL:</strong> <a href="{{ song.url|default:"N/A" }}">{{ song.url|default:"N/A" }}</a></p>
   <hr>
   <p><strong>General Notes:</strong></p>
   <div>{{ song.general_notes|safe }}</div>

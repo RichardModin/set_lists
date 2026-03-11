@@ -7,6 +7,7 @@ class Song(models.Model):
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
     key = models.CharField(max_length=5, null=True, blank=True)
+    url = models.CharField(max_length=100, null=True, blank=True)
     tempo = models.IntegerField(null=True, blank=True)
     genre = models.CharField(max_length=50, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
