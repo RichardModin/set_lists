@@ -28,12 +28,3 @@
 .print-only {
     display: none;
 }
-
-#songs, #setlists, #notes {
-    border-left: 1px solid #dee2e6;
-    padding-left: 1rem;
-    border-right: 1px solid #dee2e6;
-    padding-right: 1rem;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 1rem;
-}
