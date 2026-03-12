@@ -14,6 +14,9 @@ class Song(models.Model):
     band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name='songs')
     general_notes = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.title} - {self.artist}"
+
 class Notes(models.Model):
     song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='notes')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')

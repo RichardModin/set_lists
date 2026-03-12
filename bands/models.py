@@ -7,9 +7,16 @@ class Band(models.Model):
     members = models.ManyToManyField(User, related_name='bands')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 class BandInvite(models.Model):
     band = models.ForeignKey(Band, on_delete=models.CASCADE)
     invited_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invites')
     invited_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_invites')
     created_at = models.DateTimeField(auto_now_add=True)
     accepted = models.BooleanField(default=False)
+
+    def __str__(self):
+        status = "accepted" if self.accepted else "pending"
+        return f"Invite to {self.invited_user.username} for {self.band.name} ({status})"

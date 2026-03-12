@@ -11,7 +11,13 @@ class SetList(models.Model):
     songs = models.ManyToManyField(Song, through='SetListSong')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.name} ({self.band.name})"
+
 class SetListSong(models.Model):
     setlist = models.ForeignKey(SetList, on_delete=models.CASCADE)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.order}. {self.song.title} in {self.setlist.name}"
