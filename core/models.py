@@ -5,19 +5,25 @@ from django.db import models
 from bands.models import Band
 from songs.models import Song
 
+
 class SetList(models.Model):
-    band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name='setlists')
+    band = models.ForeignKey(Band, on_delete=models.CASCADE, related_name="setlists")
     name = models.CharField(max_length=100)
-    songs = models.ManyToManyField(Song, through='SetListSong')
+    song_ids = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} ({self.band.name})"
 
-class SetListSong(models.Model):
-    setlist = models.ForeignKey(SetList, on_delete=models.CASCADE)
-    song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()
+    @property
+    def ordered_songs(self):
+        """
+        Return Song instances in the order stored in song_ids.
+        Falls back to an empty list if song_ids is empty.
+        """
+        if not self.song_ids:
+            return []
 
-    def __str__(self):
-        return f"{self.order}. {self.song.title} in {self.setlist.name}"
+        qs = Song.objects.filter(id__in=self.song_ids)
+        songs_by_id = {song.id: song for song in qs}
+        return [songs_by_id[song_id] for song_id in self.song_ids if song_id in songs_by_id]

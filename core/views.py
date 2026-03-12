@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from songs.models import Notes
 from .decorators import user_has_access_to_band_or_song
-from .models import SetList, Song, SetListSong
+from .models import SetList, Song
 from bands.models import Band, BandInvite
 from .forms import SetListForm, UserRegisterForm, DuplicateSetListForm
 
@@ -51,12 +51,9 @@ def duplicate_setlist(request, setlist_id):
         if form.is_valid():
             new_name = form.cleaned_data["name"]
             new_setlist = SetList.objects.create(name=new_name, band=band)
-            for sl_song in original_setlist.setlistsong_set.all():
-                SetListSong.objects.create(
-                    setlist=new_setlist,
-                    song=sl_song.song,
-                    order=sl_song.order
-                )
+            # Copy ordered song IDs from the original setlist
+            new_setlist.song_ids = list(original_setlist.song_ids or [])
+            new_setlist.save()
             messages.success(request, "Set list duplicated successfully.")
             return redirect("bands:band_detail", band_id=band.id)
     else:
@@ -72,28 +69,25 @@ def duplicate_setlist(request, setlist_id):
 @user_has_access_to_band_or_song
 def create_setlist(request, band_id):
     band = get_object_or_404(Band, id=band_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SetListForm(request.POST)
         if form.is_valid():
             setlist = form.save(commit=False)
             setlist.band = band
-            setlist.save()
 
-            # Process the songs for the setlist
-            song_ids = request.POST.getlist('songs')  # Get the list of song IDs
-            if song_ids:  # Ensure there are songs to process
-                for order, song_id in enumerate(song_ids, start=1):
-                    song = get_object_or_404(Song, id=song_id)
-                    SetListSong.objects.create(setlist=setlist, song=song, order=order)
-                return redirect('bands:band_detail', band_id=band.id)
+            # Process the songs for the setlist using ordered song IDs
+            song_ids = request.POST.getlist("songs")
+            if song_ids:
+                setlist.song_ids = [int(song_id) for song_id in song_ids]
+                setlist.save()
+                return redirect("bands:band_detail", band_id=band.id)
             else:
                 # Handle the case where no songs are provided
                 messages.error(request, "You must add at least one song to the setlist.")
-                setlist.delete()  # Remove the empty setlist
 
     else:
         form = SetListForm()
-    return render(request, 'core/setlist_form.html', {'form': form, 'band': band})
+    return render(request, "core/setlist_form.html", {"form": form, "band": band})
 
 @login_required
 @user_has_access_to_band_or_song
@@ -101,34 +95,33 @@ def edit_setlist(request, setlist_id):
     setlist = get_object_or_404(SetList, id=setlist_id)
     band = setlist.band
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SetListForm(request.POST, instance=setlist)
         if form.is_valid():
             setlist = form.save(commit=False)
 
-            # Clear existing songs from the setlist
-            setlist.setlistsong_set.all().delete()
-
-            # Process the songs for the setlist
-            song_ids = request.POST.getlist('songs')  # Get the list of song IDs
-            if song_ids:  # Ensure there are songs to process
-                for order, song_id in enumerate(song_ids, start=1):
-                    song = get_object_or_404(Song, id=song_id)
-                    SetListSong.objects.create(setlist=setlist, song=song, order=order)
+            # Process the songs for the setlist using ordered song IDs
+            song_ids = request.POST.getlist("songs")
+            if song_ids:
+                setlist.song_ids = [int(song_id) for song_id in song_ids]
+                setlist.save()
                 messages.success(request, "Setlist updated successfully.")
             else:
                 # Handle the case where no songs are provided
                 messages.error(request, "You must add at least one song to the setlist.")
-                setlist.delete()  # Remove the empty setlist
     else:
         form = SetListForm(instance=setlist)
 
-    return render(request, 'core/setlist_form.html', {
-        'form': form,
-        'band': band,
-        'setlist': setlist,
-        'edit_mode': True,
-    })
+    return render(
+        request,
+        "core/setlist_form.html",
+        {
+            "form": form,
+            "band": band,
+            "setlist": setlist,
+            "edit_mode": True,
+        },
+    )
 
 @login_required
 @user_has_access_to_band_or_song

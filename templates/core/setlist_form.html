@@ -71,7 +71,7 @@
                 <td>{{ song.tempo }}</td>
                 <td>{{ song.genre }}</td>
                 <td>
-                  <button type="button" class="btn btn-sm btn-success" onclick="addSongToSetlist('{{ song.id }}', '{{ song.title }}', '{{ song.artist }}', '{{ song.key }}', '{{ song.tempo }}')">Add</button>
+                  <button type="button" class="btn btn-sm btn-success" onclick="addSongToSetlist('{{ song.id }}', '{{ song.title }}', '{{ song.artist }}', '{{ song.key }}', '{{ song.tempo }}', '{{ song.genre }}')">Add</button>
                 </td>
               </tr>
             {% empty %}
@@ -100,7 +100,7 @@
           </thead>
           <tbody>
             {% if edit_mode %}
-              {% for song in setlist.songs.all %}
+              {% for song in setlist.ordered_songs %}
                 <tr data-id="{{ song.id }}">
                   <td>{{ forloop.counter }}</td>
                   <td>{{ song.title }}</td>
@@ -148,7 +148,7 @@
       ]
     });
 
-    function addSongToSetlist(id, title, artist, key, tempo) {
+    function addSongToSetlist(id, title, artist, key, tempo, genre) {
       if ($(`#setlistTable tbody tr[data-id="${id}"]`).length > 0) {
         alert("This song is already in the setlist.");
         return;
@@ -162,6 +162,7 @@
         artist,
         key,
         tempo,
+        genre,
         `
           <button type="button" class="btn btn-sm btn-danger" onclick="removeSongFromSetlist('${id}')">Remove</button>
           <input type="hidden" name="songs" value="${id}">
