@@ -77,44 +77,6 @@
     });
   }
 
-  function initialiseTabState(page) {
-    const tabs = document.querySelectorAll('#bandTabs button[data-bs-toggle="tab"]');
-    if (!tabs.length || !window.bootstrap) {
-      return;
-    }
-
-    const currentYear = page.dataset.currentYear;
-    const currentMonth = page.dataset.currentMonth;
-    const params = new URLSearchParams(window.location.search);
-    const requestedTab = params.get('tab');
-
-    if (requestedTab) {
-      const tabTrigger = document.querySelector(`#${requestedTab}-tab`);
-      if (tabTrigger) {
-        bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
-      }
-    }
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('shown.bs.tab', function (event) {
-        const tabId = event.target.id.replace('-tab', '');
-        const nextParams = new URLSearchParams(window.location.search);
-        nextParams.set('tab', tabId);
-
-        if (tabId === 'calendar') {
-          if (currentYear) {
-            nextParams.set('year', currentYear);
-          }
-          if (currentMonth) {
-            nextParams.set('month', currentMonth);
-          }
-        }
-
-        window.history.replaceState({}, '', `${window.location.pathname}?${nextParams.toString()}`);
-      });
-    });
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
     const page = document.getElementById('band-detail-page');
     if (!page) {
@@ -123,6 +85,5 @@
 
     initialiseSongsTable();
     initialiseNoteDeletion(page);
-    initialiseTabState(page);
   });
 })();

@@ -1,74 +1,71 @@
-<div class="tab-pane fade" id="calendar" role="tabpanel" aria-labelledby="calendar-tab">
-  <div class="d-flex justify-content-between align-items-center pt-3 mb-3">
-    <div>
-      <h4 class="mb-0">Calendar</h4>
-      <small class="text-muted">{{ current_month_name }} {{ current_year }}</small>
-    </div>
-    <div class="d-flex gap-2">
-      <a href="?tab=calendar&year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-outline-secondary">Previous</a>
-      <a href="{% url 'core:create_event' band.id %}?year={{ current_year }}&month={{ current_month }}" class="btn btn-sm btn-primary">Add Event</a>
-      <a href="?tab=calendar&year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-outline-secondary">Next</a>
-    </div>
+<div class="d-flex justify-content-between align-items-center pt-3 mb-3">
+  <div>
+    <h4 class="mb-0">Calendar</h4>
+    <small class="text-muted">{{ current_month_name }} {{ current_year }}</small>
   </div>
-
-  <div class="table-responsive">
-    <table class="table table-bordered align-middle">
-      <thead class="table-dark">
-        <tr>
-          <th scope="col">Sun</th>
-          <th scope="col">Mon</th>
-          <th scope="col">Tue</th>
-          <th scope="col">Wed</th>
-          <th scope="col">Thu</th>
-          <th scope="col">Fri</th>
-          <th scope="col">Sat</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for week in calendar_weeks %}
-        <tr>
-          {% for day in week %}
-          <td class="{% if not day.in_current_month %}text-muted bg-dark{% endif %}" style="width: 14.285%; min-width: 150px; vertical-align: top;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <span class="fw-semibold">{{ day.date.day }}</span>
-              <a
-                href="{% url 'core:create_event' band.id %}?year={{ day.date.year }}&month={{ day.date.month }}&day={{ day.date.day }}"
-                class="btn btn-sm btn-outline-primary py-0 px-2"
-                aria-label="Add event on {{ day.date }}"
-              >+</a>
-            </div>
-
-            {% for event in day.events %}
-            <div class="card mb-2 border-secondary">
-              <div class="card-body p-2">
-                <div class="small text-muted">{{ event.time|time:"g:i A" }}</div>
-                <div class="fw-semibold">{{ event.title }}</div>
-                {% if event.venue %}
-                <div class="small">{{ event.venue.name }}</div>
-                {% elif event.location %}
-                <div class="small">{{ event.location }}</div>
-                {% endif %}
-                <div class="mt-2 d-flex gap-1 flex-wrap">
-                  <a href="{% url 'core:event_detail' event.id %}" class="btn btn-sm btn-secondary">View</a>
-                  <a href="{% url 'core:edit_event' event.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                </div>
-              </div>
-            </div>
-            {% empty %}
-            <div
-              class="card mb-2 bg-transparent border-0"
-              style="aspect-ratio: 1 / 1;"
-            >
-              <div class="card-body p-2 d-flex align-items-center justify-content-center text-center">
-              </div>
-            </div>
-            {% endfor %}
-          </td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="d-flex gap-2">
+    <a href="{% url 'bands:band_calendar' band.id %}?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-outline-secondary">Previous</a>
+    <a href="{% url 'core:create_event' band.id %}?year={{ current_year }}&month={{ current_month }}" class="btn btn-sm btn-primary">Add Event</a>
+    <a href="{% url 'bands:band_calendar' band.id %}?year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-outline-secondary">Next</a>
   </div>
 </div>
 
+<div class="table-responsive">
+  <table class="table table-bordered align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Sun</th>
+        <th scope="col">Mon</th>
+        <th scope="col">Tue</th>
+        <th scope="col">Wed</th>
+        <th scope="col">Thu</th>
+        <th scope="col">Fri</th>
+        <th scope="col">Sat</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar_weeks %}
+      <tr>
+        {% for day in week %}
+        <td class="{% if not day.in_current_month %}text-muted bg-dark{% endif %}" style="width: 14.285%; min-width: 150px; vertical-align: top;">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="fw-semibold">{{ day.date.day }}</span>
+            <a
+              href="{% url 'core:create_event' band.id %}?year={{ day.date.year }}&month={{ day.date.month }}&day={{ day.date.day }}"
+              class="btn btn-sm btn-outline-primary py-0 px-2"
+              aria-label="Add event on {{ day.date }}"
+            >+</a>
+          </div>
+
+          {% for event in day.events %}
+          <div class="card mb-2 border-secondary">
+            <div class="card-body p-2">
+              <div class="small text-muted">{{ event.time|time:"g:i A" }}</div>
+              <div class="fw-semibold">{{ event.title }}</div>
+              {% if event.venue %}
+              <div class="small">{{ event.venue.name }}</div>
+              {% elif event.location %}
+              <div class="small">{{ event.location }}</div>
+              {% endif %}
+              <div class="mt-2 d-flex gap-1 flex-wrap">
+                <a href="{% url 'core:event_detail' event.id %}" class="btn btn-sm btn-secondary">View</a>
+                <a href="{% url 'core:edit_event' event.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div
+            class="card mb-2 bg-transparent border-0"
+            style="aspect-ratio: 1 / 1;"
+          >
+            <div class="card-body p-2 d-flex align-items-center justify-content-center text-center">
+            </div>
+          </div>
+          {% endfor %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

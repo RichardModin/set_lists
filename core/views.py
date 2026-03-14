@@ -19,7 +19,7 @@ SECRET_PASSCODE = "dwkjtvssgssfdhajk"
 
 
 def _band_calendar_url(band_id, event_date):
-    return f"{reverse('bands:band_detail', kwargs={'band_id': band_id})}?{urlencode({'tab': 'calendar', 'year': event_date.year, 'month': event_date.month})}"
+    return f"{reverse('bands:band_calendar', kwargs={'band_id': band_id})}?{urlencode({'year': event_date.year, 'month': event_date.month})}"
 
 
 def register(request):
@@ -42,6 +42,7 @@ def register(request):
 def dashboard(request):
     user_bands = request.user.bands.prefetch_related('members').all()
     invites = BandInvite.objects.filter(invited_user=request.user, accepted=False).select_related('band', 'invited_by')
+
     return render(request, 'core/dashboard.html', {'bands': user_bands, 'invites': invites})
 
 
@@ -67,7 +68,7 @@ def duplicate_setlist(request, setlist_id):
             new_setlist.song_ids = list(original_setlist.song_ids or [])
             new_setlist.save()
             messages.success(request, "Set list duplicated successfully.")
-            return redirect("bands:band_detail", band_id=band.id)
+            return redirect("bands:band_setlists", band_id=band.id)
     else:
         form = DuplicateSetListForm(initial={"name": f"{original_setlist.name} (Copy)"})
 
@@ -93,7 +94,7 @@ def create_setlist(request, band_id):
             if song_ids:
                 setlist.song_ids = [int(song_id) for song_id in song_ids]
                 setlist.save()
-                return redirect("bands:band_detail", band_id=band.id)
+                return redirect("bands:band_setlists", band_id=band.id)
             else:
                 # Handle the case where no songs are provided
                 messages.error(request, "You must add at least one song to the setlist.")
@@ -147,7 +148,7 @@ def delete_setlist(request, setlist_id):
     if request.method == "POST":
         setlist.delete()
         messages.success(request, "Setlist deleted successfully.")
-        return redirect('bands:band_detail', band_id=band.id)
+        return redirect('bands:band_setlists', band_id=band.id)
 
     return render(request, 'core/setlist_confirm_delete.html', {'setlist': setlist})
 

@@ -34,7 +34,7 @@ def create_song(request, band_id):
             if note_content and note_content != '<p></p>':  # Check if my_notes is not empty
                 note = Notes(song=song, user=request.user, content=note_content)
                 note.save()
-            return redirect('bands:band_detail', band_id=band.id)  # Redirect to the band detail page
+            return redirect('bands:band_songs', band_id=band.id)  # Redirect to the band detail page
     else:
         form = SongForm()
 
@@ -78,7 +78,7 @@ def edit_song(request, song_id):
                 else:
                     note = Notes(song=song, user=request.user, content=note_content)
                 note.save()
-            return redirect('bands:band_detail', band_id=song.band.id)
+            return redirect('bands:band_songs', band_id=song.band.id)
     else:
         form = SongForm(instance=song)
 
@@ -98,7 +98,7 @@ def delete_song(request, song_id):
     band = song.band
     if request.method == "POST":
         song.delete()
-        return redirect('bands:band_detail', band_id=band.id)  # Update with your actual song list URL name
+        return redirect('bands:band_songs', band_id=band.id)
 
     return render(request, 'songs/song_confirm_delete.html', {'song': song, 'band': band})
 
@@ -127,7 +127,7 @@ def upload_csv(request, band_id):
                     created_by=request.user
                 )
             messages.success(request, 'Songs imported successfully!')
-            return redirect('bands:band_detail', band_id=band.id)
+            return redirect('bands:band_songs', band_id=band.id)
         except Exception as e:
             messages.error(request, f'Error processing file: {e}')
             return redirect('songs:upload_csv', band_id=band.id)

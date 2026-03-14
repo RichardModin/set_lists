@@ -41,7 +41,7 @@
           <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-secondary">Cancel</a>
           <a href="{% url 'core:delete_setlist' setlist.id %}" class="btn btn-danger">Delete</a>
         {% else %}
-          <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+          <a href="{% url 'bands:band_setlists' band.id %}" class="btn btn-secondary">Cancel</a>
         {% endif %}
       </div>
     </div>

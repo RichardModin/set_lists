@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Band: {{ band.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Edit Band</h2>
+    <a href="{% url 'bands:band_calendar' band.id %}" class="btn btn-secondary">Back to Calendar</a>
+  </div>
+
+  <div class="row g-4">
+
+    {# ── Left column: edit form ── #}
+    <div class="col-12 col-lg-5">
+      <div class="card">
+        <div class="card-header"><h5 class="mb-0">Band Details</h5></div>
+        <div class="card-body">
+          <form id="band-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="band">
+            {% for field in form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                  <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+            <div class="d-flex gap-2 mt-3">
+              <button type="submit" form="band-form" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+          <form method="post" action="{% url 'bands:delete_band' band.id %}" class="mt-2" onsubmit="return confirm('Delete this band? This cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Delete Band</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {# ── Right column: members + invites + invite form ── #}
+    <div class="col-12 col-lg-7">
+
+      {# Current Members #}
+      <div class="card mb-4">
+        <div class="card-header"><h5 class="mb-0">Members</h5></div>
+        <ul class="list-group list-group-flush">
+          {% for member in band.members.all %}
+            <li class="list-group-item">{{ member.username }}</li>
+          {% empty %}
+            <li class="list-group-item text-muted">No members yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {# Pending Invites #}
+      {% if pending_invites %}
+      <div class="card mb-4">
+        <div class="card-header"><h5 class="mb-0">Pending Invitations</h5></div>
+        <ul class="list-group list-group-flush">
+          {% for invite in pending_invites %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ invite.invited_user.username }}</span>
+              <small class="text-muted">invited by {{ invite.invited_by.username }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {# Invite form #}
+      <div class="card">
+        <div class="card-header"><h5 class="mb-0">Invite a Member</h5></div>
+        <div class="card-body">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          <form id="invite-form" method="post" action="{% url 'bands:invite_member' band.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="id_invited_user" class="form-label">Username</label>
+              <input
+                type="text"
+                name="invited_user"
+                class="form-control {% if invite_form.invited_user.errors %}is-invalid{% endif %}"
+                id="id_invited_user"
+                value="{{ invite_form.invited_user.value|default_if_none:'' }}"
+                placeholder="Enter a username"
+              >
+              {% for error in invite_form.invited_user.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <button type="submit" form="invite-form" class="btn btn-primary">Send Invitation</button>
+          </form>
+        </div>
+      </div>
+
+    </div>{# /right column #}
+  </div>{# /row #}
+</div>
+{% endblock %}
+

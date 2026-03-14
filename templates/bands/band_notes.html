@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notes: {{ band.name }}{% endblock %}
+
+{% block content %}
+<div id="band-detail-page" class="container mt-4" data-delete-note-url="{% url 'core:delete_note' %}">
+  <div class="pt-3">
+    <h4>My Notes</h4>
+    <ul class="list-group mt-2">
+      {% for note in user_notes %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            {% if note.song %}
+              <strong>{{ note.song.title }}</strong> <span>by {{ note.song.artist }}</span>
+            {% endif %}
+          </div>
+          <div>
+            {% if note.song %}
+            <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-secondary">View</a>
+            {% endif %}
+            <button class="btn btn-sm btn-outline-danger delete-note-btn" data-note-id="{{ note.id }}">Delete</button>
+          </div>
+        </div>
+        <p class="mt-2">{{ note.content|safe }}</p>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">No notes available.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/band_detail.js' %}"></script>
+{% endblock %}
+

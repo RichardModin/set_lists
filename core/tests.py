@@ -6,6 +6,21 @@ from bands.models import Band
 from core.models import Event
 
 
+class DashboardRoutingTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="dashboard_user", password="testpass123")
+        self.band = Band.objects.create(name="Dashboard Band")
+        self.band.members.add(self.user)
+        self.client.force_login(self.user)
+
+    def test_dashboard_renders_for_authenticated_user(self):
+        response = self.client.get(reverse("core:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/dashboard.html")
+        self.assertContains(response, "Dashboard Band")
+
+
 class EventCalendarRedirectTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="richard", password="testpass123")
@@ -31,7 +46,7 @@ class EventCalendarRedirectTests(TestCase):
         event = Event.objects.get(title="Album Release Show")
         self.assertRedirects(
             response,
-            f"{reverse('bands:band_detail', kwargs={'band_id': self.band.id})}?tab=calendar&year=2026&month=4",
+            f"{reverse('bands:band_calendar', kwargs={'band_id': self.band.id})}?year=2026&month=4",
             fetch_redirect_response=False,
         )
         self.assertEqual(event.band, self.band)
@@ -65,7 +80,7 @@ class EventCalendarRedirectTests(TestCase):
         event.refresh_from_db()
         self.assertRedirects(
             response,
-            f"{reverse('bands:band_detail', kwargs={'band_id': self.band.id})}?tab=calendar&year=2026&month=6",
+            f"{reverse('bands:band_calendar', kwargs={'band_id': self.band.id})}?year=2026&month=6",
             fetch_redirect_response=False,
         )
         self.assertEqual(event.title, "Rescheduled Rehearsal")
@@ -85,7 +100,7 @@ class EventCalendarRedirectTests(TestCase):
 
         self.assertRedirects(
             response,
-            f"{reverse('bands:band_detail', kwargs={'band_id': self.band.id})}?tab=calendar&year=2026&month=7",
+            f"{reverse('bands:band_calendar', kwargs={'band_id': self.band.id})}?year=2026&month=7",
             fetch_redirect_response=False,
         )
         self.assertFalse(Event.objects.filter(id=event.id).exists())

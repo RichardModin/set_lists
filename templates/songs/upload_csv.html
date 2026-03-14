@@ -24,7 +24,7 @@
       <input type="file" name="csv_file" id="csvFile" class="form-control" required>
     </div>
     <button type="submit" class="btn btn-primary">Upload</button>
-    <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+    <a href="{% url 'bands:band_songs' band.id %}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>
 {% endblock %}

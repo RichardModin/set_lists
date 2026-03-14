@@ -10,7 +10,7 @@
       <h2>{% if editing %}Edit{% else %}Create{% endif %} Song for {{ band.name }}</h2>
       <div>
         <button type="submit" form="song-form" class="btn btn-primary">{% if editing %}Save Changes{% else %}Create Song{% endif %}</button>
-        <a href="{% url 'bands:band_detail' band.id %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'bands:band_songs' band.id %}" class="btn btn-secondary">Cancel</a>
         {% if editing %}
           <a href="{% url 'songs:delete_song' song.id %}" class="btn btn-danger">Delete</a>
         {% endif %}
