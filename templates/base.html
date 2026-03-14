@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Band Manager{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/bootstrap_c.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -23,7 +23,7 @@
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <nav class="navbar navbar-expand-lg bg-primary mb-4">
     <div class="container-fluid px-3 px-lg-4">
       {% if user.is_authenticated %}
         <a class="navbar-brand" href="{% url 'core:dashboard' %}">Dashboard</a>
@@ -55,7 +55,7 @@
             <li class="nav-item">
               <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                <button type="submit" class="nav-link btn btn-link">Log out</button>
+                <button type="submit" class="nav-link">Log out</button>
               </form>
             </li>
           {% else %}
@@ -70,7 +70,7 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="bg-dark border-top mt-auto py-3">
+  <footer class="bg-light border-top mt-auto py-3">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
       <div class="text-muted small">© {% now "Y" %} BandManager App</div>
       <nav aria-label="breadcrumb">

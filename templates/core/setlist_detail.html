@@ -33,7 +33,7 @@
             <td>{{ song.tempo }} bpm</td>
             <td>{{ song.genre }}</td>
             <td>
-              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-outline-primary">View Song</a>
+              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-primary">View Song</a>
             </td>
           </tr>
         {% endfor %}
