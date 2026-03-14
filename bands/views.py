@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from bands.models import Band, BandInvite
 from core.decorators import user_has_access_to_band_or_song
@@ -240,3 +241,33 @@ def accept_invite(request, invite_id):
 
     messages.success(request, "You have successfully joined the band.")
     return redirect('bands:band_calendar', band_id=invite.band.id)
+
+@require_POST
+@login_required
+@user_has_access_to_band_or_song
+def remove_member(request, band_id, user_id):
+    band = get_object_or_404(Band, id=band_id)
+    member = get_object_or_404(band.members, id=user_id)
+
+    # Prevent orphaned bands with zero members.
+    if band.members.count() <= 1:
+        messages.error(request, "A band must have at least one member.")
+        return redirect('bands:band_manage', band_id=band.id)
+
+    band.members.remove(member)
+    messages.success(request, f"Removed {member.username} from the band.")
+
+    if member == request.user:
+        return redirect('core:dashboard')
+    return redirect('bands:band_manage', band_id=band.id)
+
+
+@require_POST
+@login_required
+@user_has_access_to_band_or_song
+def delete_invite(request, band_id, invite_id):
+    band = get_object_or_404(Band, id=band_id)
+    invite = get_object_or_404(BandInvite, id=invite_id, band=band, accepted=False)
+    invite.delete()
+    messages.success(request, "Invitation removed.")
+    return redirect('bands:band_manage', band_id=band.id)

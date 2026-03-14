@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from bands.models import Band
+from bands.models import Band, BandInvite
 
 
 class BandCalendarPageTests(TestCase):
@@ -36,3 +36,35 @@ class BandCalendarPageTests(TestCase):
         self.assertContains(response, reverse("bands:band_songs", args=[self.band.id]))
         self.assertContains(response, reverse("bands:band_setlists", args=[self.band.id]))
         self.assertContains(response, reverse("bands:band_notes", args=[self.band.id]))
+
+
+class BandManageActionsTests(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username="owner", password="testpass123")
+        self.member = User.objects.create_user(username="member", password="testpass123")
+        self.invited = User.objects.create_user(username="invited", password="testpass123")
+        self.band = Band.objects.create(name="Action Band")
+        self.band.members.add(self.owner, self.member)
+        self.invite = BandInvite.objects.create(
+            band=self.band,
+            invited_user=self.invited,
+            invited_by=self.owner,
+            accepted=False,
+        )
+        self.client.force_login(self.owner)
+
+    def test_remove_member_post_removes_member(self):
+        response = self.client.post(
+            reverse("bands:remove_member", kwargs={"band_id": self.band.id, "user_id": self.member.id})
+        )
+
+        self.assertRedirects(response, reverse("bands:band_manage", kwargs={"band_id": self.band.id}))
+        self.assertFalse(self.band.members.filter(id=self.member.id).exists())
+
+    def test_delete_invite_post_removes_pending_invite(self):
+        response = self.client.post(
+            reverse("bands:delete_invite", kwargs={"band_id": self.band.id, "invite_id": self.invite.id})
+        )
+
+        self.assertRedirects(response, reverse("bands:band_manage", kwargs={"band_id": self.band.id}))
+        self.assertFalse(BandInvite.objects.filter(id=self.invite.id).exists())

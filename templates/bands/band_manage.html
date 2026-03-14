@@ -13,26 +13,27 @@
     {# ── Left column: edit form ── #}
     <div class="col-12 col-lg-5">
       <div class="card">
-        <div class="card-header"><h5 class="mb-0">Band Details</h5></div>
+        <div class="card-header bg-primary"><h5 class="mb-0">Details</h5></div>
         <div class="card-body">
           <form id="band-form" method="post">
             {% csrf_token %}
             <input type="hidden" name="form_type" value="band">
-            {% for field in form %}
-              <div class="mb-3">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                  <div class="form-text">{{ field.help_text }}</div>
-                {% endif %}
-                {% for error in field.errors %}
-                  <div class="text-danger small">{{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endfor %}
-            <div class="d-flex gap-2 mt-3">
-              <button type="submit" form="band-form" class="btn btn-primary">Save Changes</button>
+            <div class="mb-3">
+              <label for="id_name" class="form-label">Name</label>
+              <input
+                type="text"
+                name="name"
+                class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                id="id_name"
+                value="{{ form.name.value|default_if_none:'' }}"
+                placeholder="Enter band name"
+                required
+              >
+              {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
             </div>
+            <button type="submit" form="band-form" class="btn btn-primary">Save Changes</button>
           </form>
           <form method="post" action="{% url 'bands:delete_band' band.id %}" class="mt-2" onsubmit="return confirm('Delete this band? This cannot be undone.');">
             {% csrf_token %}
@@ -47,10 +48,16 @@
 
       {# Current Members #}
       <div class="card mb-4">
-        <div class="card-header"><h5 class="mb-0">Members</h5></div>
+        <div class="card-header bg-info"><h5 class="mb-0">Members</h5></div>
         <ul class="list-group list-group-flush">
           {% for member in band.members.all %}
-            <li class="list-group-item">{{ member.username }}</li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ member.username }}</span>
+              <form method="post" action="{% url 'bands:remove_member' band.id member.id %}" class="m-0" onsubmit="return confirm('Remove {{ member.username }} from this band?');">
+                {% csrf_token %}
+                <button type="submit" class="badge rounded-pill text-bg-danger" aria-label="Remove {{ member.username }}">&#10005;</button>
+              </form>
+            </li>
           {% empty %}
             <li class="list-group-item text-muted">No members yet.</li>
           {% endfor %}
@@ -60,12 +67,18 @@
       {# Pending Invites #}
       {% if pending_invites %}
       <div class="card mb-4">
-        <div class="card-header"><h5 class="mb-0">Pending Invitations</h5></div>
+        <div class="card-header bg-warning"><h5 class="mb-0">Pending Invitations</h5></div>
         <ul class="list-group list-group-flush">
           {% for invite in pending_invites %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span>{{ invite.invited_user.username }}</span>
-              <small class="text-muted">invited by {{ invite.invited_by.username }}</small>
+              <div>
+                <span>{{ invite.invited_user.username }}</span>
+                <small class="text-muted d-block">invited by {{ invite.invited_by.username }}</small>
+              </div>
+              <form method="post" action="{% url 'bands:delete_invite' band.id invite.id %}" class="m-0" onsubmit="return confirm('Remove this invitation?');">
+                {% csrf_token %}
+                <button type="submit" class="badge rounded-pill text-bg-danger" aria-label="Delete invite for {{ invite.invited_user.username }}">&#10005;</button>
+              </form>
             </li>
           {% endfor %}
         </ul>
@@ -74,7 +87,7 @@
 
       {# Invite form #}
       <div class="card">
-        <div class="card-header"><h5 class="mb-0">Invite a Member</h5></div>
+        <div class="card-header bg-warning"><h5 class="mb-0">Invite a Member</h5></div>
         <div class="card-body">
           {% if messages %}
             {% for message in messages %}
@@ -109,4 +122,3 @@
   </div>{# /row #}
 </div>
 {% endblock %}
-
