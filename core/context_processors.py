@@ -1,5 +1,4 @@
 # core/context_processors.py
-from urllib.parse import urlparse
 
 from bands.models import Band, BandInvite
 from songs.models import Song
@@ -54,12 +53,24 @@ def _resolve_selected_band(request):
 def breadcrumbs(request):
     breadcrumbs = [{'name': 'Home', 'url': '/dashboard/'}]
 
+    resolver_match = getattr(request, 'resolver_match', None)
+    url_name = resolver_match.url_name if resolver_match else None
+
     if 'bands' in request.path:
         band_id = request.resolver_match.kwargs.get('band_id')
         if band_id:
             try:
                 band = Band.objects.get(id=band_id)
-                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/calendar/'})
+                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/manage/'})
+
+                page_labels = {
+                    'band_calendar': 'Calendar',
+                    'band_songs': 'Songs',
+                    'band_setlists': 'Set Lists',
+                    'band_notes': 'Notes',
+                }
+                if url_name in page_labels:
+                    breadcrumbs.append({'name': page_labels[url_name], 'url': None})
             except Band.DoesNotExist:
                 pass
 
@@ -71,43 +82,33 @@ def breadcrumbs(request):
                 song = Song.objects.select_related('band').get(id=song_id)
                 band_id = song.band.id
                 band_name = song.band.name
-                breadcrumbs.append({'name': band_name, 'url': f'/bands/{band_id}/songs/'})
-
-                # Check if the previous URL is from a setlist
-                referer = request.META.get('HTTP_REFERER', '')
-                parsed_referer = urlparse(referer)
-                if 'setlists' in parsed_referer.path:
-                    setlist_id = parsed_referer.path.split('/')[-2]  # Extract setlist ID from URL
-                    try:
-                        setlist = SetList.objects.get(id=setlist_id)
-                        breadcrumbs.append({'name': f'Setlist: {setlist.name}', 'url': f'/setlists/{setlist_id}/'})
-                    except SetList.DoesNotExist:
-                        pass
-
+                breadcrumbs.append({'name': band_name, 'url': f'/bands/{band_id}/manage/'})
+                breadcrumbs.append({'name': 'Songs', 'url': f'/bands/{band_id}/songs/'})
                 breadcrumbs.append({'name': f'Song: {song.title}', 'url': None})
+
+                if 'edit' in request.path:
+                    breadcrumbs.append({'name': 'Edit', 'url': None})
+                elif 'delete' in request.path:
+                    breadcrumbs.append({'name': 'Delete', 'url': None})
             except Song.DoesNotExist:
                 pass
 
         if 'create' in request.path and band_id:
             try:
                 band = Band.objects.get(id=band_id)
-                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/songs/'})
+                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/manage/'})
+                breadcrumbs.append({'name': 'Songs', 'url': f'/bands/{band_id}/songs/'})
                 breadcrumbs.append({'name': 'Create Song', 'url': None})
             except Band.DoesNotExist:
                 pass
         elif 'upload_csv' in request.path and band_id:
             try:
                 band = Band.objects.get(id=band_id)
-                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/songs/'})
+                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/manage/'})
+                breadcrumbs.append({'name': 'Songs', 'url': f'/bands/{band_id}/songs/'})
                 breadcrumbs.append({'name': 'Upload CSV', 'url': None})
             except Band.DoesNotExist:
                 pass
-        elif 'edit' in request.path:
-            breadcrumbs.append({'name': f'Edit', 'url': None})
-        elif 'view' in request.path:
-            breadcrumbs.append({'name': f'Details', 'url': None})
-        elif 'delete' in request.path:
-            breadcrumbs.append({'name': f'Delete', 'url': None})
 
     if 'setlists' in request.path:
         setlist_id = request.resolver_match.kwargs.get('setlist_id')
@@ -117,23 +118,24 @@ def breadcrumbs(request):
                 setlist = SetList.objects.select_related('band').get(id=setlist_id)
                 band_id = setlist.band.id
                 band_name = setlist.band.name
-                breadcrumbs.append({'name': band_name, 'url': f'/bands/{band_id}/setlists/'})
+                breadcrumbs.append({'name': band_name, 'url': f'/bands/{band_id}/manage/'})
+                breadcrumbs.append({'name': 'Set Lists', 'url': f'/bands/{band_id}/setlists/'})
                 breadcrumbs.append({'name': f'Set List: {setlist.name}', 'url': None})
+
+                if 'edit' in request.path:
+                    breadcrumbs.append({'name': 'Edit', 'url': None})
+                elif 'delete' in request.path:
+                    breadcrumbs.append({'name': 'Delete', 'url': None})
             except SetList.DoesNotExist:
                 pass
 
         if 'create' in request.path and band_id:
             try:
                 band = Band.objects.get(id=band_id)
-                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/setlists/'})
+                breadcrumbs.append({'name': band.name, 'url': f'/bands/{band_id}/manage/'})
+                breadcrumbs.append({'name': 'Set Lists', 'url': f'/bands/{band_id}/setlists/'})
                 breadcrumbs.append({'name': 'Create Set List', 'url': None})
             except Band.DoesNotExist:
                 pass
-        elif 'edit' in request.path:
-            breadcrumbs.append({'name': f'Edit', 'url': None})
-        elif 'view' in request.path:
-            breadcrumbs.append({'name': f'Details', 'url': None})
-        elif 'delete' in request.path:
-            breadcrumbs.append({'name': f'Delete', 'url': None})
 
     return {'breadcrumbs': breadcrumbs, 'selected_band': _resolve_selected_band(request)}

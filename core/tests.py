@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from bands.models import Band
-from core.models import Event
+from core.models import Event, SetList
+from songs.models import Song
 
 
 class DashboardRoutingTests(TestCase):
@@ -19,6 +20,51 @@ class DashboardRoutingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "core/dashboard.html")
         self.assertContains(response, "Dashboard Band")
+
+
+class BreadcrumbDetailTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="crumbs", password="testpass123")
+        self.band = Band.objects.create(name="Breadcrumb Band")
+        self.band.members.add(self.user)
+        self.song = Song.objects.create(
+            title="Ocean Avenue",
+            artist="Yellowcard",
+            created_by=self.user,
+            band=self.band,
+        )
+        self.setlist = SetList.objects.create(name="Friday Night", band=self.band)
+        self.client.force_login(self.user)
+
+    def _crumb_names(self, response):
+        if isinstance(response.context, dict):
+            return [crumb["name"] for crumb in response.context["breadcrumbs"]]
+
+        for ctx in reversed(response.context):
+            if "breadcrumbs" in ctx:
+                return [crumb["name"] for crumb in ctx["breadcrumbs"]]
+
+        self.fail("Breadcrumbs not found in response context")
+
+    def test_song_view_breadcrumbs_include_songs_section(self):
+        response = self.client.get(reverse("songs:song_detail", kwargs={"song_id": self.song.id}))
+        names = self._crumb_names(response)
+        self.assertEqual(names, ["Home", self.band.name, "Songs", f"Song: {self.song.title}"])
+
+    def test_song_edit_breadcrumbs_include_edit_suffix(self):
+        response = self.client.get(reverse("songs:edit_song", kwargs={"song_id": self.song.id}))
+        names = self._crumb_names(response)
+        self.assertEqual(names, ["Home", self.band.name, "Songs", f"Song: {self.song.title}", "Edit"])
+
+    def test_setlist_view_breadcrumbs_include_setlists_section(self):
+        response = self.client.get(reverse("core:view_setlist", kwargs={"setlist_id": self.setlist.id}))
+        names = self._crumb_names(response)
+        self.assertEqual(names, ["Home", self.band.name, "Set Lists", f"Set List: {self.setlist.name}"])
+
+    def test_setlist_edit_breadcrumbs_include_edit_suffix(self):
+        response = self.client.get(reverse("core:edit_setlist", kwargs={"setlist_id": self.setlist.id}))
+        names = self._crumb_names(response)
+        self.assertEqual(names, ["Home", self.band.name, "Set Lists", f"Set List: {self.setlist.name}", "Edit"])
 
 
 class EventCalendarRedirectTests(TestCase):

@@ -28,14 +28,33 @@ class BandCalendarPageTests(TestCase):
         self.assertEqual(first_week[0]["date"].weekday(), 6)
         self.assertEqual(first_week[-1]["date"], date(2025, 10, 4))
 
-    def test_navbar_uses_selected_band_name_and_band_pages_dropdown(self):
+    def test_navbar_shows_selected_band_and_band_page_links(self):
         response = self.client.get(reverse("bands:band_calendar", args=[self.band.id]))
 
-        self.assertContains(response, "Dashboard")  # brand link
-        self.assertContains(response, self.band.name)  # dropdown toggle shows band name
+        self.assertContains(response, self.band.name)
         self.assertContains(response, reverse("bands:band_songs", args=[self.band.id]))
         self.assertContains(response, reverse("bands:band_setlists", args=[self.band.id]))
         self.assertContains(response, reverse("bands:band_notes", args=[self.band.id]))
+
+    def test_band_subpages_have_expected_breadcrumb_label(self):
+        cases = [
+            ("bands:band_calendar", "Calendar"),
+            ("bands:band_songs", "Songs"),
+            ("bands:band_setlists", "Set Lists"),
+            ("bands:band_notes", "Notes"),
+        ]
+
+        for route_name, expected_label in cases:
+            with self.subTest(route_name=route_name):
+                response = self.client.get(reverse(route_name, args=[self.band.id]))
+                self.assertEqual(response.status_code, 200)
+
+                context = response.context[-1] if hasattr(response.context, "__getitem__") and not isinstance(response.context, dict) else response.context
+                breadcrumb_names = [crumb["name"] for crumb in context["breadcrumbs"]]
+
+                self.assertEqual(breadcrumb_names[0], "Home")
+                self.assertIn(self.band.name, breadcrumb_names)
+                self.assertEqual(breadcrumb_names[-1], expected_label)
 
 
 class BandManageActionsTests(TestCase):
