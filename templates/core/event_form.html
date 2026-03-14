@@ -117,8 +117,9 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center">
-          <a href="{% url 'bands:band_calendar' band.id %}{% if year and month %}?year={{ year }}&month={{ month }}{% endif %}" class="btn btn-secondary">Back to Band</a>
+          <a href="{% url 'bands:band_calendar' band.id %}{% if year and month %}?year={{ year }}&month={{ month }}{% endif %}" class="btn btn-secondary">Back to Calendar</a>
           <div class="d-flex gap-2">
+            <a href="{% url 'bands:band_calendar' band.id %}{% if year and month %}?year={{ year }}&month={{ month }}{% endif %}" class="btn btn-warning">Cancel</a>
             {% if event %}
               <a href="{% url 'core:delete_event' event.id %}" class="btn btn-danger">Delete</a>
             {% endif %}
