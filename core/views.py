@@ -40,8 +40,8 @@ def register(request):
 
 @login_required
 def dashboard(request):
-    user_bands = request.user.bands.all()
-    invites = BandInvite.objects.filter(invited_user=request.user, accepted=False)
+    user_bands = request.user.bands.prefetch_related('members').all()
+    invites = BandInvite.objects.filter(invited_user=request.user, accepted=False).select_related('band', 'invited_by')
     return render(request, 'core/dashboard.html', {'bands': user_bands, 'invites': invites})
 
 
