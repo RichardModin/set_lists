@@ -42,8 +42,10 @@
           <td class="d-none d-lg-table-cell">{{ song.tempo }}</td>
           <td class="d-none d-xl-table-cell">{{ song.genre }}</td>
           <td class="text-end">
-            <a href="{% url 'songs:edit_song' song.id %}" class="btn btn-sm btn-primary">Edit</a>
-            <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-secondary">View</a>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Song actions">
+              <a href="{% url 'songs:edit_song' song.id %}" class="btn btn-warning">Edit</a>
+              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-info">View</a>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -56,4 +58,3 @@
 {% block extra_js %}
   <script src="{% static 'js/band_detail.js' %}"></script>
 {% endblock %}
-

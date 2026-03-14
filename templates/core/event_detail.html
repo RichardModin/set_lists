@@ -10,7 +10,7 @@
       <small class="text-muted">Band: {{ band.name }}</small>
     </div>
     <div>
-      <a href="{% url 'core:edit_event' event.id %}" class="btn btn-primary">Edit Event</a>
+      <a href="{% url 'core:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
       <a href="{% url 'bands:band_calendar' band.id %}?year={{ event.date.year }}&month={{ event.date.month }}" class="btn btn-secondary ms-2">Back to Band</a>
     </div>
   </div>

@@ -83,8 +83,10 @@
               <td class="d-none d-lg-table-cell">{{ song.tempo }}</td>
               <td class="d-none d-xl-table-cell">{{ song.genre }}</td>
               <td class="text-end">
-                <a href="{% url 'songs:edit_song' song.id %}" class="btn btn-sm btn-primary">Edit</a>
-                <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-secondary">View</a>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Song actions">
+                  <a href="{% url 'songs:edit_song' song.id %}" class="btn btn-warning">Edit</a>
+                  <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-info">View</a>
+                </div>
               </td>
             </tr>
             {% endfor %}
@@ -103,7 +105,7 @@
         {% for setlist in band.setlists.all %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           {{ setlist.name }}
-          <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-secondary">View</a>
+          <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-info">View</a>
         </li>
         {% empty %}
         <li class="list-group-item text-muted">No set lists yet.</li>
@@ -126,7 +128,7 @@
               </div>
               <div>
                 {% if note.song %}
-                <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-secondary">View</a>
+                <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-info">View</a>
                 {% endif %}
                 <button class="btn btn-sm btn-danger delete-note-btn" data-note-id="{{ note.id }}">Delete</button>
               </div>

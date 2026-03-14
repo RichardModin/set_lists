@@ -18,7 +18,7 @@
           </div>
           <div>
             {% if note.song %}
-            <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-secondary">View</a>
+            <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-info">View</a>
             {% endif %}
             <button class="btn btn-sm btn-danger delete-note-btn" data-note-id="{{ note.id }}">Delete</button>
           </div>
@@ -36,4 +36,3 @@
 {% block extra_js %}
   <script src="{% static 'js/band_detail.js' %}"></script>
 {% endblock %}
-

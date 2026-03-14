@@ -8,7 +8,7 @@
     <h2 class="mb-0">Set List: {{ setlist.name }}</h2>
     <div>
       <a href="{% url 'core:duplicate_setlist' setlist.id %}" class="btn btn-secondary ms-2">Duplicate</a>
-      <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-primary">Edit Setlist</a>
+      <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-warning">Edit Setlist</a>
     </div>
   </div>
 
@@ -33,7 +33,7 @@
             <td>{{ song.tempo }} bpm</td>
             <td>{{ song.genre }}</td>
             <td>
-              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-primary">View Song</a>
+              <a href="{% url 'songs:song_detail' song.id %}" class="btn btn-sm btn-info">View Song</a>
             </td>
           </tr>
         {% endfor %}

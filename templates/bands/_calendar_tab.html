@@ -46,9 +46,11 @@
               {% elif event.location %}
               <div class="small">{{ event.location }}</div>
               {% endif %}
-              <div class="mt-2 d-flex gap-1 flex-wrap">
-                <a href="{% url 'core:event_detail' event.id %}" class="btn btn-sm btn-secondary">View</a>
-                <a href="{% url 'core:edit_event' event.id %}" class="btn btn-sm btn-primary">Edit</a>
+              <div class="mt-2">
+                <div class="btn-group btn-group-sm" role="group" aria-label="Event actions">
+                  <a href="{% url 'core:event_detail' event.id %}" class="btn btn-info">View</a>
+                  <a href="{% url 'core:edit_event' event.id %}" class="btn btn-warning">Edit</a>
+                </div>
               </div>
             </div>
           </div>
