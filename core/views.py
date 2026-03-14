@@ -191,7 +191,7 @@ def create_event(request, band_id):
     else:
         form = EventForm(initial=initial)
 
-    return render(request, "core/event_form.html", {"form": form, "band": band})
+    return render(request, "core/event_form.html", {"form": form, "band": band, "year": year, "month": month})
 
 
 @login_required
@@ -208,7 +208,7 @@ def edit_event(request, event_id):
     else:
         form = EventForm(instance=event)
 
-    return render(request, "core/event_form.html", {"form": form, "band": band, "event": event})
+    return render(request, "core/event_form.html", {"form": form, "band": band, "event": event, "year": event.date.year, "month": event.date.month})
 
 
 @login_required
