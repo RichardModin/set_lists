@@ -1,8 +1,13 @@
+from datetime import date, timedelta
+import calendar
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
 from bands.models import Band, BandInvite
 from core.decorators import user_has_access_to_band_or_song
+from core.models import Event
 from .forms import BandForm, BandInviteForm
 
 
@@ -41,11 +46,63 @@ def band_detail(request, band_id):
     band = get_object_or_404(Band, id=band_id)
     unique_artists = band.songs.values_list('artist', flat=True).distinct()
     user_notes = request.user.notes.filter(song__band_id=band_id)
-    return render(request, 'bands/band_detail.html', {
-        'band': band,
-        'unique_artists': unique_artists,
-        'user_notes': user_notes
-    })
+
+    # Calendar context
+    today = date.today()
+    try:
+        year = int(request.GET.get("year", today.year))
+        month = int(request.GET.get("month", today.month))
+        if month < 1 or month > 12:
+            raise ValueError
+    except ValueError:
+        year = today.year
+        month = today.month
+
+    first_of_month = date(year, month, 1)
+    _, last_day_num = calendar.monthrange(year, month)
+    last_of_month = date(year, month, last_day_num)
+
+    month_events = (
+        Event.objects.filter(band=band, date__gte=first_of_month, date__lte=last_of_month)
+        .select_related("venue", "created_by")
+        .order_by("date", "time")
+    )
+    events_by_date = {}
+    for event in month_events:
+        events_by_date.setdefault(event.date, []).append(event)
+
+    cal = calendar.Calendar(firstweekday=6)  # Sunday
+    calendar_weeks = []
+    for week in cal.monthdatescalendar(year, month):
+        week_days = []
+        for day in week:
+            week_days.append(
+                {
+                    "date": day,
+                    "in_current_month": day.month == month,
+                    "events": events_by_date.get(day, []),
+                }
+            )
+        calendar_weeks.append(week_days)
+
+    prev_month_date = first_of_month - timedelta(days=1)
+    next_month_date = last_of_month + timedelta(days=1)
+
+    context = {
+        "band": band,
+        "unique_artists": unique_artists,
+        "user_notes": user_notes,
+        "calendar_weeks": calendar_weeks,
+        "current_year": year,
+        "current_month": month,
+        "current_month_name": calendar.month_name[month],
+        "prev_year": prev_month_date.year,
+        "prev_month": prev_month_date.month,
+        "next_year": next_month_date.year,
+        "next_month": next_month_date.month,
+    }
+
+    return render(request, "bands/band_detail.html", context)
 
 @login_required
 @user_has_access_to_band_or_song

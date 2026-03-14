@@ -1,7 +1,8 @@
 from django import forms
-from .models import SetList
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+
+from .models import SetList, Event, EventNote
 
 
 class UserRegisterForm(UserCreationForm):
@@ -25,3 +26,24 @@ class DuplicateSetListForm(forms.ModelForm):
         labels = {
             "name": "New Set List Name",
         }
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            "title",
+            "type",
+            "date",
+            "time",
+            "venue",
+            "location",
+            "door_price",
+            "notes",
+        ]
+
+
+class EventNoteForm(forms.ModelForm):
+    class Meta:
+        model = EventNote
+        fields = ["content"]
