@@ -3,20 +3,25 @@
 {% block title %}Set Lists: {{ band.name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center pt-3">
-    <h4>Set Lists</h4>
-    <a href="{% url 'core:create_setlist' band.id %}" class="btn btn-sm btn-primary">Create New Setlist</a>
+<div id="band-setlists" class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center pt-3 mb-4">
+    <h2 class="mb-0">Set Lists</h2>
+    <a href="{% url 'core:create_setlist' band.id %}" class="btn btn-primary">Create New Setlist</a>
   </div>
-  <ul class="list-group mt-2">
-    {% for setlist in band.setlists.all %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      {{ setlist.name }}
-      <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-info">View</a>
-    </li>
-    {% empty %}
-    <li class="list-group-item text-muted">No set lists yet.</li>
-    {% endfor %}
-  </ul>
+  <div class="mb-2">
+    <ul class="list-group mt-2">
+      {% for setlist in band.setlists.all %}
+      <li class="list-group-item d-flex justify-content-between align-items-center{% if forloop.counter|divisibleby:2 %} list-group-item-light{% endif %}">
+        {{ setlist.name }}
+        <div class="btn-group btn-group-sm" role="group" aria-label="Setlist actions">
+          <a href="{% url 'core:edit_setlist' setlist.id %}" class="btn btn-sm btn-warning">Edit</a>
+          <a href="{% url 'core:view_setlist' setlist.id %}" class="btn btn-sm btn-info">View</a>
+        </div>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">No set lists yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 {% endblock %}

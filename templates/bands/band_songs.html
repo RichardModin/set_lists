@@ -4,16 +4,16 @@
 {% block title %}Songs: {{ band.name }}{% endblock %}
 
 {% block content %}
-<div id="band-detail-page" class="container mt-4">
+<div id="band-songs-page" class="container mt-4">
   <div class="d-flex justify-content-between align-items-center pt-3">
-    <h4>Master Song List</h4>
-    <div class="text-end">
-      <a href="{% url 'songs:create_song' band.id %}" class="btn btn-sm btn-primary">Create New Song</a>
-      <a href="{% url 'songs:upload_csv' band.id %}" class="btn btn-sm btn-secondary">Upload CSV</a>
+    <h2 class="mb-0">Master Song List</h2>
+    <div class="btn-group text-end">
+      <a href="{% url 'songs:create_song' band.id %}" class="btn btn-primary">Create New Song</a>
+      <a href="{% url 'songs:upload_csv' band.id %}" class="btn btn-secondary">Upload CSV</a>
     </div>
   </div>
   <div class="mb-2">
-    <label for="artistFilter" class="form-label">Filter by Artist:</label>
+    <label for="artistFilter" class="form-label d-inline-block">Filter by Artist:</label>
     <select id="artistFilter" class="form-select">
       <option value="">All Artists</option>
       {% for artist in unique_artists %}
@@ -24,7 +24,7 @@
   <div class="table-responsive">
     <table id="songsTable" class="table table-striped table-borderless align-middle mb-0">
       <thead>
-        <tr>
+        <tr class="table-primary">
           <th>Title</th>
           <th class="d-none d-md-table-cell">Artist</th>
           <th class="d-none d-lg-table-cell">Key</th>

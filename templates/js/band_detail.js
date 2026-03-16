@@ -22,6 +22,20 @@
       order: [[0, 'asc']],
     });
 
+    // Right-align the built-in DataTables filter container.
+    $('#songsTable_filter').addClass('text-end').removeClass('dataTables_filter');;
+    // Make DataTables search input visually match Bootstrap inputs.
+    $('#songsTable_filter input[type="search"]').addClass('form-control d-inline-block w-100').removeClass('form-control-sm');
+    //add a placeholder to the search input
+    $('#songsTable_filter input[type="search"]').attr('placeholder', 'Search songs...');
+    //remove the default label for the search input
+    $('#songsTable_filter label').addClass('w-100').contents().filter(function() {
+      return this.nodeType === Node.TEXT_NODE;
+    }).remove();
+
+    $('#songsTable_wrapper > div:nth-child(1) > div:nth-child(1)').remove();
+    $('#songsTable_wrapper > div:nth-child(1) > div').removeClass('col-md-6').addClass('col-md-12');
+
     if (artistFilter.length) {
       artistFilter.on('change', function () {
         table.column(1).search(this.value).draw();
@@ -78,7 +92,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    const page = document.getElementById('band-detail-page');
+    const page = document.getElementById('band-songs-page');
     if (!page) {
       return;
     }

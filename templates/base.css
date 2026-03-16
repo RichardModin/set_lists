@@ -11,7 +11,8 @@
     .song-detail .btn,
     .set-list-detail h2,
     .set-list-detail p,
-    .breadcrumb {
+    .breadcrumb,
+     footer {
         display: none !important;
     }
 

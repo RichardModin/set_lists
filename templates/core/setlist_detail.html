@@ -3,17 +3,18 @@
 {% block title %}Details: {{ setlist.name }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5 set-list-detail">
+<div id="band-songs-page" class="container mt-5 set-list-detail">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Set List: {{ setlist.name }}</h2>
-    <div>
+    <div class="btn-group" role="group" aria-label="Setlist actions">
       <a href="{% url 'core:duplicate_setlist' setlist.id %}" class="btn btn-secondary ms-2">Duplicate</a>
       <a href="{% url 'core:edit_setlist' setlist.id  %}" class="btn btn-warning">Edit Setlist</a>
+      <button onclick="window.print()" class="btn btn-info">Print</button>
     </div>
   </div>
 
   {% if setlist.ordered_songs %}
-    <table id="songsTable" class="table table-striped table-bordered mt-4">
+    <table id="songsTable" class="table table-striped table-borderless align-middle mb-0">
       <thead>
         <tr>
           <th>Title</th>

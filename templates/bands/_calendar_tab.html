@@ -1,11 +1,9 @@
-<div class="d-flex justify-content-between align-items-center pt-3 mb-3">
-  <div>
-    <h2 class="mb-0">{{ current_month_name }} {{ current_year }}</h2>
-  </div>
-  <div class="d-flex gap-2">
-    <a href="{% url 'bands:band_calendar' band.id %}?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-sm btn-secondary">Previous</a>
-    <a href="{% url 'core:create_event' band.id %}?year={{ current_year }}&month={{ current_month }}" class="btn btn-sm btn-primary">Add Event</a>
-    <a href="{% url 'bands:band_calendar' band.id %}?year={{ next_year }}&month={{ next_month }}" class="btn btn-sm btn-secondary">Next</a>
+<div class="d-flex justify-content-between align-items-center pt-3 mb-4">
+  <h2 class="mb-0">{{ current_month_name }} {{ current_year }}</h2>
+  <div class="btn-group d-flex">
+    <a href="{% url 'bands:band_calendar' band.id %}?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-secondary">Previous</a>
+    <a href="{% url 'core:create_event' band.id %}?year={{ current_year }}&month={{ current_month }}" class="btn btn-primary">Create New Event</a>
+    <a href="{% url 'bands:band_calendar' band.id %}?year={{ next_year }}&month={{ next_month }}" class="btn btn-secondary">Next</a>
   </div>
 </div>
 
@@ -37,7 +35,7 @@
           </div>
 
           {% for event in day.events %}
-          <div class="card mb-2 border-secondary">
+          <div class="card mb-2 border-dark">
             <div class="card-body p-2">
               <div class="small text-muted">{{ event.time|time:"g:i A" }}</div>
               <div class="fw-semibold">{{ event.title }}</div>
