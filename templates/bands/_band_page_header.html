@@ -1,0 +1,12 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-4">
+  <div>
+    <h2 class="mb-0">{{ band.name }}</h2>
+    <small class="text-muted">
+      {% for member in band.members.all %}
+        {{ member.username }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </small>
+  </div>
+  <a href="{% url 'bands:band_manage' band.id %}" class="btn btn-secondary btn-sm">Edit Band</a>
+</div>
+

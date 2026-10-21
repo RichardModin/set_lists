@@ -174,3 +174,7 @@ cython_debug/
 .pypirc
 
 .idea
+# Migration files
+core/migrations
+bands/migrations
+songs/migrations

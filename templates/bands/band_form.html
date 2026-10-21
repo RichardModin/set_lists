@@ -10,7 +10,7 @@
       <h2>{% if editing %}Edit Band{% else %}Create a New Band{% endif %}</h2>
       <div>
         <button type="submit" form="band-form" class="btn btn-primary">{% if editing %}Save Changes{% else %}Create Band{% endif %}</button>
-        <a href="{% if editing %}{% url 'bands:band_detail' band.id %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% if editing %}{% url 'bands:band_calendar' band.id %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">Cancel</a>
       </div>
     </div>
 

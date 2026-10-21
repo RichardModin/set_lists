@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar: {{ band.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  {% include "bands/_calendar_tab.html" %}
+</div>
+{% endblock %}
+

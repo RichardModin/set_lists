@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if event %}Edit Event: {{ event.title }}{% else %}Create Event{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+      <h2 class="mb-1">
+        {% if event %}Edit Event{% else %}Create Event{% endif %}
+      </h2>
+      <p class="text-muted mb-4">Band: {{ band.name }}</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              <p class="mb-0">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# Title #}
+        <div class="mb-3">
+          <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.title.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Type #}
+        <div class="mb-3">
+          <label for="{{ form.type.id_for_label }}" class="form-label">Type</label>
+          {{ form.type }}
+          {% if form.type.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.type.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Date #}
+        <div class="mb-3">
+          <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+          {{ form.date }}
+          {% if form.date.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.date.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Time #}
+        <div class="mb-3">
+          <label for="{{ form.time.id_for_label }}" class="form-label">Time</label>
+          {{ form.time }}
+          {% if form.time.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.time.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Venue #}
+        <div class="mb-3">
+          <label for="{{ form.venue.id_for_label }}" class="form-label">Venue <span class="text-muted">(optional)</span></label>
+          {{ form.venue }}
+          {% if form.venue.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.venue.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Location #}
+        <div class="mb-3">
+          <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+          {{ form.location }}
+          {% if form.location.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.location.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Door Price #}
+        <div class="mb-3">
+          <label for="{{ form.door_price.id_for_label }}" class="form-label">Door Price <span class="text-muted">(optional)</span></label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            {{ form.door_price }}
+          </div>
+          {% if form.door_price.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.door_price.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Public Notes #}
+        <div class="mb-4">
+          <label for="{{ form.notes.id_for_label }}" class="form-label">Public Notes</label>
+          {{ form.notes }}
+          {% if form.notes.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.notes.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="{% url 'bands:band_calendar' band.id %}{% if year and month %}?year={{ year }}&month={{ month }}{% endif %}" class="btn btn-secondary">Back to Calendar</a>
+          <div class="d-flex gap-2">
+            <a href="{% url 'bands:band_calendar' band.id %}{% if year and month %}?year={{ year }}&month={{ month }}{% endif %}" class="btn btn-warning">Cancel</a>
+            {% if event %}
+              <a href="{% url 'core:delete_event' event.id %}" class="btn btn-danger">Delete</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Save Event</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

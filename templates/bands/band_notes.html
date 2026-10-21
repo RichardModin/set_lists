@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notes: {{ band.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="pt-3 mb-4">
+    <h2 class="mb-0">My Notes</h2>
+  </div>
+  <div class="mb-2">
+    <ul class="list-group mt-2">
+      {% for note in user_notes %}
+      <li class="list-group-item{% if forloop.counter|divisibleby:2 %} list-group-item-light{% endif %}">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            {% if note.song %}
+              <strong>{{ note.song.title }}</strong> <span>by {{ note.song.artist }}</span>
+            {% endif %}
+          </div>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Note actions">
+            {% if note.song %}
+            <a href="{% url 'songs:edit_song' note.song.id %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'songs:song_detail' note.song.id %}" class="btn btn-sm btn-info">View</a>
+            {% endif %}
+            <button class="btn btn-sm btn-danger delete-note-btn" data-note-id="{{ note.id }}">Delete</button>
+          </div>
+        </div>
+        <p class="mt-2">{{ note.content|safe }}</p>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">No notes available.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/band_detail.js' %}"></script>
+{% endblock %}
